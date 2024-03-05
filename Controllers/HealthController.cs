@@ -7,7 +7,7 @@ namespace MakeMeAPix.Controllers;
 [Route("[controller]")]
 public class HealthController(HealthService service) : ControllerBase
 {
-  HealthService _service = service;
+  readonly HealthService _service = service;
 
   [HttpGet]
   public IActionResult GetHealth()
