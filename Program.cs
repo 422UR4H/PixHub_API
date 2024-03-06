@@ -1,3 +1,4 @@
+using MakeMeAPix.Middlewares;
 using MakeMeAPix.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,5 +26,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 app.Run();
