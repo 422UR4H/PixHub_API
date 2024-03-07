@@ -1,6 +1,5 @@
 using PixHub.Data;
 using PixHub.Middlewares;
-using PixHub.Repositories;
 using PixHub.Services;
 using Microsoft.EntityFrameworkCore;
 
