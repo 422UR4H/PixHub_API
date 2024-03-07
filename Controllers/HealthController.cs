@@ -1,7 +1,7 @@
-using MakeMeAPix.Services;
+using PixHub.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MakeMeAPix.Controllers;
+namespace PixHub.Controllers;
 
 [ApiController]
 [Route("[controller]")]

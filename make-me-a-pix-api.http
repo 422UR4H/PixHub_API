@@ -1,6 +1,0 @@
-@make_me_a_pix_api_HostAddress = http://localhost:5089
-
-GET {{make_me_a_pix_api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

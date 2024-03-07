@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <RootNamespace>MakeMeAPix</RootNamespace>
+    <RootNamespace>PixHub</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

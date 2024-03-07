@@ -1,4 +1,4 @@
-namespace MakeMeAPix.Services;
+namespace PixHub.Services;
 
 public class HealthService
 {

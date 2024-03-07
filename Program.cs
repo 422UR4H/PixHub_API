@@ -1,6 +1,7 @@
-using MakeMeAPix.Data;
-using MakeMeAPix.Middlewares;
-using MakeMeAPix.Services;
+using PixHub.Data;
+using PixHub.Middlewares;
+using PixHub.Repositories;
+using PixHub.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace MakeMeAPix.Middlewares;
+namespace PixHub.Middlewares;
 
 public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlerMiddleware> logger)
 {

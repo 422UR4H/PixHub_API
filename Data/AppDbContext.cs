@@ -1,7 +1,7 @@
-using MakeMeAPix.Models;
+using PixHub.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace MakeMeAPix.Data;
+namespace PixHub.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
