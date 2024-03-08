@@ -12,4 +12,7 @@ public class PaymentProvider(string token, string bankName)
   public string BankName { get; set; } = bankName;
 
   public ICollection<PaymentProviderAccount>? PaymentProviderAccounts { get; set; }
+
+  public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+  public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

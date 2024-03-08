@@ -14,4 +14,7 @@ public class User(string CPF, string name)
 
   [JsonInclude]
   public ICollection<PaymentProviderAccount>? PaymentProviderAccounts { get; set; }
+
+  public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+  public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

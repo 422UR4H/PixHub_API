@@ -17,4 +17,7 @@ public class PaymentProviderAccount(string accountNumber, string agency, int use
   public int UserId { get; set; } = userId;
   public PaymentProvider? PaymentProvider { get; set; }
   public int PaymentProviderId { get; set; } = paymentProviderId;
+
+  public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+  public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

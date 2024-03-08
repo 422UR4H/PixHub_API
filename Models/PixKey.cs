@@ -15,4 +15,7 @@ public class PixKey(string value, string type, int paymentProviderAccountId)
   [JsonIgnore]
   public PaymentProviderAccount? PaymentProviderAccount { get; set; }
   public int PaymentProviderAccountId { get; set; } = paymentProviderAccountId;
+
+  public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+  public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }
