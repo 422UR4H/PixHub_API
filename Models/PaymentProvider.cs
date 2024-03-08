@@ -10,4 +10,6 @@ public class PaymentProvider(string token, string bankName)
   public int Id { get; set; }
   public string Token { get; set; } = token;
   public string BankName { get; set; } = bankName;
+
+  public ICollection<PaymentProviderAccount>? PaymentProviderAccounts { get; set; }
 }
