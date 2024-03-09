@@ -4,9 +4,11 @@ namespace PixHub.Dtos;
 
 public class AccountDTO(string number, string agency)
 {
-  [Required]
+  [StringLength(20)]
+  [Required(ErrorMessage = "Field number is mandatory")]
   public string Number { get; } = number;
 
-  [Required]
+  [StringLength(64)]
+  [Required(ErrorMessage = "Field agency is mandatory")]
   public string Agency { get; } = agency;
 }

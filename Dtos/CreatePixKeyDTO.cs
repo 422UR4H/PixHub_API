@@ -5,13 +5,13 @@ namespace PixHub.Dtos;
 
 public class CreatePixKeyDTO(KeyDTO key, UserDTO user, AccountDTO account)
 {
-  [Required]
+  [Required(ErrorMessage = "Field key is mandatory")]
   public KeyDTO Key { get; } = key;
 
-  [Required]
+  [Required(ErrorMessage = "Field user is mandatory")]
   public UserDTO User { get; } = user;
 
-  [Required]
+  [Required(ErrorMessage = "Field account is mandatory")]
   public AccountDTO Account { get; } = account;
 
   public PixKey ToEntity(int accountId)

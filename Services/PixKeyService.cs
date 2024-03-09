@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using PixHub.Dtos;
 using PixHub.Exceptions;
 using PixHub.Models;
@@ -25,7 +26,7 @@ public class PixKeyService(
 
     if (await _repository.ExistsPixKeyAsync(dto.Key.Value)) throw new PixKeyAlreadyExistsException();
 
-    if (dto.Key.Type == "CPF" && dto.Key.Value != user.CPF) throw new InvalidCpfPixKeyException();
+    ValidatePixKeyByType(dto.Key, user.CPF);
 
     AccountDTO accountDTO = dto.Account;
 
@@ -51,6 +52,30 @@ public class PixKeyService(
 
     int totalPixKeyCount = await _repository.CountAsync();
     if (totalPixKeyCount >= 20) throw new TotalPixKeyLimitException();
+  }
+
+  public void ValidatePixKeyByType(KeyDTO key, string cpf)
+  {
+    switch (key.Type)
+    {
+      case "CPF":
+        if (key.Value != cpf) throw new InvalidCpfPixKeyException();
+        break;
+      case "Email":
+        var regexEmail = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+        if (!regexEmail.IsMatch(key.Value))
+        {
+          throw new InvalidEmailException();
+        }
+        break;
+      case "Phone":
+        var regexPhone = new Regex(@"^(\d{11})$");
+        if (!regexPhone.IsMatch(key.Value))
+        {
+          throw new InvalidPhoneException();
+        }
+        break;
+    }
   }
 
   public async Task<OutputPixKeyDTO> FindPixKey(string type, string value, string token)

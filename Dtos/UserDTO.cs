@@ -4,6 +4,7 @@ namespace PixHub.Dtos;
 
 public class UserDTO(string cpf)
 {
-  [Required]
+  [Length(11, 11)]
+  [Required(ErrorMessage = "Field cpf is mandatory")]
   public string Cpf { get; } = cpf;
 }

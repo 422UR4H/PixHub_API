@@ -35,6 +35,8 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
       PixKeyAlreadyExistsException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
       InvalidCpfPixKeyException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
       InvalidCpfException _ => new ExceptionResponse(HttpStatusCode.UnprocessableEntity, ex.Message),
+      InvalidEmailException _ => new ExceptionResponse(HttpStatusCode.UnprocessableEntity, ex.Message),
+      InvalidPhoneException _ => new ExceptionResponse(HttpStatusCode.UnprocessableEntity, ex.Message),
       UnauthorizedProviderException _ => new ExceptionResponse(HttpStatusCode.Unauthorized, ex.Message),
       PixKeyPersistenceDatabaseException _ => new ExceptionResponse(HttpStatusCode.InternalServerError, ex.Message),
       PaymentProviderAccountNotFoundException _ => new ExceptionResponse(HttpStatusCode.NotFound, ex.Message),
