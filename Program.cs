@@ -2,6 +2,7 @@ using PixHub.Data;
 using PixHub.Middlewares;
 using PixHub.Services;
 using Microsoft.EntityFrameworkCore;
+using PixHub.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +23,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<HealthService>();
+builder.Services.AddScoped<PaymentProviderService>();
+builder.Services.AddScoped<PaymentProviderRepository>();
 
 var app = builder.Build();
 
