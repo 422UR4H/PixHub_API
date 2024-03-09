@@ -23,6 +23,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<HealthService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<PaymentProviderService>();
 builder.Services.AddScoped<PaymentProviderRepository>();
 
