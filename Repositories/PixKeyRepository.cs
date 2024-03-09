@@ -30,4 +30,12 @@ public class PixKeyRepository(AppDbContext dbContext)
   {
     return await _dbContext.PixKey.CountAsync(pk => pk.PaymentProviderAccountId.Equals(accountId));
   }
+
+  public async Task<PixKey?> FindAsync(string type, string value)
+  {
+    return await _dbContext.PixKey
+      .Include(pk => pk.PaymentProviderAccount)
+      .ThenInclude(a => a!.User)
+      .FirstOrDefaultAsync(pk => pk.Type.Equals(type) && pk.Value.Equals(value));
+  }
 }

@@ -18,11 +18,10 @@ public class PixKeyService(
 
   public async Task<PixKey> CreatePixKey(CreatePixKeyDTO dto, string token)
   {
-    PaymentProvider paymentProvider = await _paymentProviderService.FindByTokenAsync(token) ??
-      throw new UnauthorizedProviderException();
+    PaymentProvider paymentProvider = await _paymentProviderService.FindByTokenAsync(token);
 
     // TODO: refactor to FindByCpfWithPaymentProvider
-    User user = await _userService.FindByCpfAsync(dto.User.Cpf) ?? throw new UserNotFoundException();
+    User user = await _userService.FindByCpfAsync(dto.User.Cpf);
 
     if (await _repository.ExistsPixKeyAsync(dto.Key.Value)) throw new PixKeyAlreadyExistsException();
 
@@ -52,5 +51,23 @@ public class PixKeyService(
 
     int totalPixKeyCount = await _repository.CountAsync();
     if (totalPixKeyCount >= 20) throw new TotalPixKeyLimitException();
+  }
+
+  public async Task<OutputPixKeyDTO> FindPixKey(string type, string value, string token)
+  {
+    PaymentProvider paymentProvider = await _paymentProviderService.FindByTokenAsync(token);
+
+    PixKey pixKey = await _repository.FindAsync(type, value) ?? throw new PixKeyNotFoundException();
+
+    PaymentProviderAccount account = pixKey.PaymentProviderAccount ??
+      throw new PaymentProviderAccountNotFoundException();
+
+    User user = account.User ?? throw new UserNotFoundException();
+
+    KeyDTO keyDTO = new(pixKey);
+    OutputUserDTO userDTO = new(user);
+    OutputAccountDTO accountDTO = new(account, paymentProvider);
+
+    return new OutputPixKeyDTO(keyDTO, userDTO, accountDTO);
   }
 }

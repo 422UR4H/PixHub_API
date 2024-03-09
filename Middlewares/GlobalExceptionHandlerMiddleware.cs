@@ -29,12 +29,15 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
     ExceptionResponse response = ex switch
     {
       UserNotFoundException _ => new ExceptionResponse(HttpStatusCode.NotFound, ex.Message),
+      PixKeyNotFoundException _ => new ExceptionResponse(HttpStatusCode.NotFound, ex.Message),
       TotalPixKeyLimitException _ => new ExceptionResponse(HttpStatusCode.Conflict, ex.Message),
       ProviderPixKeyLimitException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
       PixKeyAlreadyExistsException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
       InvalidCpfPixKeyException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
+      InvalidCpfException _ => new ExceptionResponse(HttpStatusCode.UnprocessableEntity, ex.Message),
       UnauthorizedProviderException _ => new ExceptionResponse(HttpStatusCode.Unauthorized, ex.Message),
       PixKeyPersistenceDatabaseException _ => new ExceptionResponse(HttpStatusCode.InternalServerError, ex.Message),
+      PaymentProviderAccountNotFoundException _ => new ExceptionResponse(HttpStatusCode.NotFound, ex.Message),
       PaymentProviderAccountAlreadyExistsException _ => new ExceptionResponse(HttpStatusCode.Conflict, ex.Message),
       _ => new ExceptionResponse(HttpStatusCode.InternalServerError, "Internal server error. Please retry later.")
     };

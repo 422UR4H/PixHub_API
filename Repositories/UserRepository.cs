@@ -14,6 +14,5 @@ public class UserRepository(AppDbContext dbContext)
       .Include(u => u.PaymentProviderAccounts)
       .Where(u => u.PaymentProviderAccounts != null)
       .FirstOrDefaultAsync(u => u.CPF == cpf);
-      // .ThenInclude(a => a.PixKeys)
   }
 }
