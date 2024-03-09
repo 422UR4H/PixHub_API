@@ -1,3 +1,4 @@
+using PixHub.Exceptions;
 using PixHub.Models;
 using PixHub.Repositories;
 
@@ -7,8 +8,9 @@ public class PaymentProviderService(PaymentProviderRepository repository)
 {
   readonly PaymentProviderRepository _repository = repository;
 
-  public async Task<PaymentProvider?> FindByTokenAsync(string token)
+  public async Task<PaymentProvider> FindByTokenAsync(string token)
   {
-    return await _repository.FindByTokenAsync(token);
+    return await _repository.FindByTokenAsync(token) ??
+      throw new UnauthorizedProviderException();
   }
 }
