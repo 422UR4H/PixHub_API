@@ -1,4 +1,5 @@
 using System.Net;
+using PixHub.Exceptions;
 
 namespace PixHub.Middlewares;
 
@@ -27,7 +28,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
 
     ExceptionResponse response = ex switch
     {
-      // SomeException _ => new ExceptionResponse(HttpStatusCode.BadRequest, ex.Message),
+      PaymentProviderAccountAlreadyExistsException _ => new ExceptionResponse(HttpStatusCode.Conflict, ex.Message),
       _ => new ExceptionResponse(HttpStatusCode.InternalServerError, "Internal server error. Please retry later.")
     };
 

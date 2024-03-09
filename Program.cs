@@ -28,6 +28,8 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<PaymentProviderService>();
 builder.Services.AddScoped<PaymentProviderRepository>();
+builder.Services.AddScoped<PaymentProviderAccountService>();
+builder.Services.AddScoped<PaymentProviderAccountRepository>();
 
 var app = builder.Build();
 
