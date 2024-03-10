@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: Pix_DB
+      POSTGRES_DB: postgres
     network_mode: host
     volumes:
       - postgres:/var/lib/postgresql/data

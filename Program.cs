@@ -3,6 +3,7 @@ using PixHub.Middlewares;
 using PixHub.Services;
 using Microsoft.EntityFrameworkCore;
 using PixHub.Repositories;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,11 +43,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMetricServer();
+app.UseHttpMetrics(options => options.AddCustomLabel("host", context => context.Request.Host.Host));
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapMetrics();
 
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
