@@ -39,8 +39,6 @@ Use Swagger to access route documentation and dynamically interact with the appl
 
 Access the link in the browser: `http://localhost:5000/swagger/index.html`.
 
-<br />
-
 ## Technologies used
 
 For this project, I used:
