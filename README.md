@@ -16,10 +16,17 @@ Clone the repository:
 
 `git clone https://github.com/422UR4H/PixHub_API`
 
+Generate the application docker image:
+
+```bash
+cd PixHub_API/
+docker build . -t pix-hub-app
+```
+
 And run the Docker environment:
 
 ```bash
-cd PixHub_API/Monitoring
+cd Monitoring/
 docker compose up
 ```
 
