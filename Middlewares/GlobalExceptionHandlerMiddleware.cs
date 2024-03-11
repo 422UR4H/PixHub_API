@@ -30,9 +30,9 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
     {
       UserNotFoundException _ => new ExceptionResponse(HttpStatusCode.NotFound, ex.Message),
       PixKeyNotFoundException _ => new ExceptionResponse(HttpStatusCode.NotFound, ex.Message),
-      TotalPixKeyLimitException _ => new ExceptionResponse(HttpStatusCode.Conflict, ex.Message),
+      TotalPixKeyLimitException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
       ProviderPixKeyLimitException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
-      PixKeyAlreadyExistsException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
+      PixKeyAlreadyExistsException _ => new ExceptionResponse(HttpStatusCode.Conflict, ex.Message),
       InvalidCpfPixKeyException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
       InvalidCpfException _ => new ExceptionResponse(HttpStatusCode.UnprocessableEntity, ex.Message),
       InvalidEmailException _ => new ExceptionResponse(HttpStatusCode.UnprocessableEntity, ex.Message),
