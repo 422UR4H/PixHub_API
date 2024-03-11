@@ -11,14 +11,14 @@ public class PixKeyController(PixKeyService service) : ControllerBase
   readonly PixKeyService _service = service;
 
   [HttpPost]
-  public async Task<IActionResult> PostPixKey([FromBody] CreatePixKeyDTO dto, [FromHeader] string authorization)
+  public async Task<IActionResult> PostPixKey([FromBody] CreatePixKeyDTO dto, [FromHeader] string token)
   {
-    return CreatedAtAction(null, null, await _service.CreatePixKey(dto, authorization));
+    return CreatedAtAction(null, null, await _service.CreatePixKey(dto, token));
   }
 
   [HttpGet("{type}/{value}")]
-  public async Task<IActionResult> GetPixKey(string type, string value, [FromHeader] string authorization)
+  public async Task<IActionResult> GetPixKey(string type, string value, [FromHeader] string token)
   {
-    return Ok(await _service.FindPixKey(type, value, authorization));
+    return Ok(await _service.FindPixKey(type, value, token));
   }
 }
