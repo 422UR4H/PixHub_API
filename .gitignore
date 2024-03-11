@@ -6,6 +6,10 @@
 # dotenv files
 .env
 
+# k6 seed json
+*existing_*.json
+package-lock.json
+
 # User-specific files
 *.rsuser
 *.suo
