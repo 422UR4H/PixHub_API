@@ -12,6 +12,7 @@ public class PaymentProviderAccount(string accountNumber, string agency, int use
   public string Agency { get; set; } = agency;
 
   public ICollection<PixKey>? PixKeys { get; set; }
+  public ICollection<Payments>? Payments { get; set; }
 
   public User? User { get; set; }
   public int UserId { get; set; } = userId;
