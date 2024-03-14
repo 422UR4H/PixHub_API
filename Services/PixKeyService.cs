@@ -21,7 +21,7 @@ public class PixKeyService(
   {
     PaymentProvider paymentProvider = await _paymentProviderService.FindByTokenAsync(token);
 
-    User user = await _userService.FindByCpfWithPaymentProviderAccount(dto.User.Cpf);
+    User user = await _userService.FindByCpfWithPaymentProviderAccounts(dto.User.Cpf);
 
     if (await _repository.ExistsPixKeyAsync(dto.Key.Value)) throw new PixKeyAlreadyExistsException();
 
@@ -42,6 +42,11 @@ public class PixKeyService(
 
     PixKey pixKey = dto.ToEntity(account.Id);
     return await _repository.CreateAsync(pixKey) ?? throw new PixKeyPersistenceDatabaseException();
+  }
+
+  public async Task ValidateIfExistsPixKey(string value)
+  {
+    if (await _repository.ExistsPixKeyAsync(value)) throw new PixKeyAlreadyExistsException();
   }
 
   public async Task ValidatePixKeysLimit(int accountId)
