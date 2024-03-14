@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace PixHub.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("health")]
 public class HealthController(HealthService service) : ControllerBase
 {
   readonly HealthService _service = service;
