@@ -20,4 +20,9 @@ public class PaymentProviderAccountRepository(AppDbContext dbContext)
 
     return entry.Entity;
   }
+  internal async Task<PaymentProviderAccount?> FindByUserCpfAsync(string cpf, string agency, string number)
+  {
+    return await _dbContext.PaymentProviderAccount
+      .FirstOrDefaultAsync(a => a.User!.CPF == cpf && a.Agency == agency && a.AccountNumber == number);
+  }
 }

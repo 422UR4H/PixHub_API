@@ -20,4 +20,10 @@ public class PaymentProviderAccountService(PaymentProviderAccountRepository repo
     PaymentProviderAccount response = await _repository.CreateAsync(paymentProviderAccount);
     return response;
   }
+
+  public async Task<PaymentProviderAccount> FindByUserCpf(string cpf, string agency, string number)
+  {
+    return await _repository.FindByUserCpfAsync(cpf, agency, number) ??
+      throw new PaymentProviderAccountNotFoundException();
+  }
 }

@@ -38,4 +38,12 @@ public class PixKeyRepository(AppDbContext dbContext)
       .ThenInclude(a => a!.User)
       .FirstOrDefaultAsync(pk => pk.Type.Equals(type) && pk.Value.Equals(value));
   }
+
+  public async Task<PixKey?> FindWithAccountAndProviderAsync(string type, string value)
+  {
+    return await _dbContext.PixKey
+      .Include(pk => pk.PaymentProviderAccount)
+      .ThenInclude(a => a!.PaymentProvider)
+      .FirstOrDefaultAsync(pk => pk.Type.Equals(type) && pk.Value.Equals(value));
+  }
 }

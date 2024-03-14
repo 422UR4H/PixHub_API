@@ -99,4 +99,10 @@ public class PixKeyService(
 
     return new OutputPixKeyDTO(keyDTO, userDTO, accountDTO);
   }
+
+  public async Task<PixKey> FindWithAccountAndProvider(string type, string value)
+  {
+    return await _repository.FindWithAccountAndProviderAsync(type, value)
+      ?? throw new PixKeyNotFoundException();
+  }
 }
