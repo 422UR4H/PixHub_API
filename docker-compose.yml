@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   postgres:
     container_name: postgres
@@ -17,16 +17,27 @@ services:
       timeout: 5s
       retries: 5
 
+  rabbitmq:
+    image: rabbitmq:3.12.12-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    volumes:
+      - rabbitmq-volume:/var/lib/rabbitmq
+
   node-exporter:
     image: quay.io/prometheus/node-exporter:latest
     command:
-      - '--path.rootfs=/host'
+      - "--path.rootfs=/host"
     pid: host
-    ports: 
+    ports:
       - 9100:9100
     restart: unless-stopped
     volumes:
-      - '/:/host:ro,rslave'
+      - "/:/host:ro,rslave"
 
   prometheus:
     container_name: prometheus
@@ -39,7 +50,7 @@ services:
   grafana:
     container_name: grafana
     image: grafana/grafana:latest
-    ports: 
+    ports:
       - 3000:3000
     volumes:
       - grafana:/var/lib/grafana
@@ -54,13 +65,26 @@ services:
       - DATA_SOURCE_USER=postgres
       - DATA_SOURCE_PASS=postgres
 
-  pix-hub-app:
-    image: pix-hub-app
+  pix-hub-api:
+    image: pix-hub-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
     ports:
-      - 5000:5000
+      - 8080:8080
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+
+  pix-hub-migrate:
+    image: pix-hub-migrate
+    container_name: pix-hub-migrate
+    build:
+      context: .
+      dockerfile: Dockerfile.migrations
 
 volumes:
   grafana:
   postgres:
+  rabbitmq-volume:
