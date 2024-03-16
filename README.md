@@ -6,7 +6,7 @@ A REST API built in C# with ASP.NET for provide a web service to creates/process
 
 The application is responsible for simulating part of the processing of the logic of the PIX mechanism within the **Central Bank** (BC), being used by different financial institutions to process the creation of PIX keys, consultations, payments and the like (for natural persons). In this context, these institutions are called **Payment Service Providers** (PSP).
 
-This Web Service contains a Dockerized environment to run a PostgreSQL database with Grafana K6 for stress testing, Prometheus and Grafana for monitoring the system and the application itself, providing an integrated and isolated environment for observability and testing.
+This Web Service contains a Dockerized environment to run a PostgreSQL database with Grafana K6 for stress testing, RabbitMQ as Message Broker to manage queues, Prometheus and Grafana for monitoring the system and the application itself, providing an integrated and isolated environment for observability and tests.
 
 <br />
 
@@ -16,16 +16,10 @@ Clone the repository:
 
 `git clone https://github.com/422UR4H/PixHub_API`
 
-Generate the application docker image:
+Enter the folder and run the Docker environment to generate de app image:
 
 ```bash
 cd PixHub_API/
-docker build . -t pix-hub-app
-```
-
-And run the Docker environment:
-
-```bash
 cd Monitoring/
 docker compose up
 ```
@@ -34,7 +28,7 @@ docker compose up
 
 ### How it works?
 
-Owns the entities: `PaymentProvider`, `User`, `PixKey` and `PaymentProviderAccount`.
+Owns the entities: `PaymentProvider`, `User`, `PixKey`, `PaymentProviderAccount` and `Payments`.
 
 The characteristics of these entities are in `Models/`.
 
@@ -44,7 +38,7 @@ And the DTOs of the entities are in `Dtos/`.
 
 Use Swagger to access route documentation and dynamically interact with the application!
 
-Access the link in the browser: `http://localhost:5000/swagger/index.html`.
+Access the link in the browser: `http://localhost:8080/swagger/index.html`.
 
 ## Technologies used
 
@@ -54,11 +48,14 @@ For this project, I used:
 - ASP.NET Core (version 8.0.2);
 - Entity Framework Core (ORM) (version 8.0.2);
 - PostgreSQL;
+- RabbitMQ;
 - Prometheus;
 - Grafana;
 - Grafana K6 with Node.js interface;
 - Docker;
 - Swagger;
+
+<br />
 
 ## Stress Tests
 
