@@ -2,7 +2,6 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using PixHub.Config;
-using PixHub.Dtos;
 using RabbitMQ.Client;
 
 namespace PixHub.Services;

@@ -6,7 +6,7 @@ using PixHub.Repositories;
 
 namespace PixHub.Services;
 
-public class PixKeyService(
+public partial class PixKeyService(
   PixKeyRepository repository,
   PaymentProviderAccountService accountService,
   PaymentProviderService paymentProviderService,
@@ -44,12 +44,7 @@ public class PixKeyService(
     return await _repository.CreateAsync(pixKey) ?? throw new PixKeyPersistenceDatabaseException();
   }
 
-  public async Task ValidateIfExistsPixKey(string value)
-  {
-    if (await _repository.ExistsPixKeyAsync(value)) throw new PixKeyAlreadyExistsException();
-  }
-
-  public async Task ValidatePixKeysLimit(int accountId)
+  private async Task ValidatePixKeysLimit(int accountId)
   {
     int providerPixKeyCount = await _repository.CountAsync(accountId);
     if (providerPixKeyCount >= 5) throw new ProviderPixKeyLimitException();
@@ -58,7 +53,7 @@ public class PixKeyService(
     if (totalPixKeyCount >= 20) throw new TotalPixKeyLimitException();
   }
 
-  public void ValidatePixKeyByType(KeyDTO key, string cpf)
+  private static void ValidatePixKeyByType(KeyDTO key, string cpf)
   {
     switch (key.Type)
     {
@@ -66,20 +61,32 @@ public class PixKeyService(
         if (key.Value != cpf) throw new InvalidCpfPixKeyException();
         break;
       case "Email":
-        var regexEmail = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+        var regexEmail = EmailRegex();
         if (!regexEmail.IsMatch(key.Value))
         {
           throw new InvalidEmailException();
         }
         break;
       case "Phone":
-        var regexPhone = new Regex(@"^(\d{11})$");
+        var regexPhone = PhoneRegex();
         if (!regexPhone.IsMatch(key.Value))
         {
           throw new InvalidPhoneException();
         }
         break;
     }
+  }
+
+  [GeneratedRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")]
+  private static partial Regex EmailRegex();
+
+  [GeneratedRegex(@"^(\d{11})$")]
+  private static partial Regex PhoneRegex();
+
+
+  public async Task ValidateIfExistsPixKey(string value)
+  {
+    if (await _repository.ExistsPixKeyAsync(value)) throw new PixKeyAlreadyExistsException();
   }
 
   public async Task<OutputPixKeyDTO> FindPixKey(string type, string value, string token)

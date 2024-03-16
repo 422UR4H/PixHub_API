@@ -19,6 +19,8 @@ public class PaymentsService(
   readonly PaymentProviderAccountService _accountService = accountService;
   readonly PaymentProviderService _paymentProviderService = paymentProviderService;
 
+  readonly int TOLERANCE_DUPLICATE_PAYMENTS_SECONDS = 30;
+
   public async Task<Payments?> CreatePayment(CreatePaymentDTO paymentDTO, string token)
   {
     PaymentProvider originProvider = await _paymentProviderService.FindByTokenAsync(token);
@@ -60,18 +62,16 @@ public class PaymentsService(
       throw new SelfTransactionException();
   }
 
-  public async Task FinishPayment(FinishPaymentsDTO dto, int id)
-  {
-    await _repository.FinishPaymentAsync(dto.Status, id);
-  }
-
-  readonly int TOLERANCE_DUPLICATE_PAYMENTS_SECONDS = 30;
-
   private async Task<bool> IsDuplicatedPayment(PaymentsIdempotenceKey key)
   {
     Payments? recentPayment = await _repository
       .FindRecentPaymentByIdempotenceKey(key, TOLERANCE_DUPLICATE_PAYMENTS_SECONDS);
 
     return recentPayment is not null;
+  }
+
+  public async Task FinishPayment(FinishPaymentsDTO dto, int id)
+  {
+    await _repository.FinishPaymentAsync(dto.Status, id);
   }
 }
