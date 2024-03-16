@@ -9,42 +9,48 @@ const knex = require("knex")({
   connection: process.env.DATABASE_URL,
 });
 
-const USERS = 700_000;
-const PAYMENT_PROVIDERS = 700_000;
-const PAYMENT_PROVIDER_ACCOUNTS = 700_000;
-const PIX_KEYS = 700_000;
+const USERS = 1_000_000;
+const PIX_KEYS = 1_000_000;
+const PAYMENTS = 1_000_000;
+const PAYMENT_PROVIDERS = 1_000_000;
+const PAYMENT_PROVIDER_ACCOUNTS = 1_000_000;
 
 const ERASE_DATA = true;
 
 async function run() {
   if (ERASE_DATA) {
+    console.log(`Erasing DB...`);
+
     await knex("PaymentProvider").del();
     await knex("User").del();
     await knex("PaymentProviderAccount").del();
     await knex("PixKey").del();
+    await knex("Payments").del();
   }
   const start = new Date();
 
   const paymentProviders = generatePaymentProviders();
-  await populatePaymentProviders(paymentProviders);
+  await populate("PaymentProvider", paymentProviders);
   generateJSON("./seed/existing_paymentProviders.json", paymentProviders);
 
   const users = generateUsers();
-  await populateUsers(users);
+  await populate("User", users);
   generateJSON("./seed/existing_users.json", users);
 
   const pixKeys = await generatePixKeys();
-  await populatePixKeys(pixKeys);
+  await populate("PixKey", pixKeys);
   generateJSON("./seed/existing_pixKeys.json", pixKeys);
 
+  const payments = await generatePayments();
+  await populate("Payments", payments);
+  generateJSON("./seed/existing_payments.json", payments);
+
   const accounts = await generatePaymentProviderAccounts();
-  await populatePaymentProviderAccounts(accounts);
+  await populate("PaymentProviderAccount", accounts);
   generateJSON("./seed/existing_accounts.json", accounts);
 
   console.log("Closing DB connection...");
   await knex.destroy();
-
-  // generateRandomData();
 
   const end = new Date();
   console.log("Done!");
@@ -61,6 +67,7 @@ function generatePaymentProviders() {
     paymentProviders.push({
       Token: faker.string.uuid(),
       BankName: faker.company.name(),
+      Webhook: "http://localhost:5039/payments/pix",
       CreatedAt: new Date(Date.now()).toISOString(),
       UpdatedAt: new Date(Date.now()).toISOString(),
     });
@@ -101,8 +108,11 @@ async function generatePixKeys() {
       UserId: user[0].Id,
     },
   ];
+
   await knex.batchInsert("PaymentProviderAccount", account);
-  generateJSON("./seed/existing_bank.json", [{ token: paymentProvider[0].Token }]);
+  generateJSON("./seed/existing_bank.json", [
+    { token: paymentProvider[0].Token },
+  ]);
 
   for (let i = 0; i < PIX_KEYS; i++) {
     pixKeys.push({
@@ -114,6 +124,50 @@ async function generatePixKeys() {
     });
   }
   return pixKeys;
+}
+
+async function generatePayments() {
+  console.log(`Generating ${PAYMENTS} payments...`);
+  const payments = [];
+
+  const user = await knex.select().from("User").limit(1);
+  const pixKey = await knex.select().from("PixKey").limit(1);
+  const paymentProvider = await knex.select().from("PaymentProvider").limit(1);
+
+  const account = [
+    {
+      Id: 2,
+      Agency: faker.finance.accountName(),
+      AccountNumber: faker.finance.accountNumber(),
+      CreatedAt: new Date(Date.now()).toISOString(),
+      UpdatedAt: new Date(Date.now()).toISOString(),
+      PaymentProviderId: paymentProvider[0].Id,
+      UserId: user[0].Id,
+    },
+  ];
+
+  await knex.batchInsert("PaymentProviderAccount", account);
+  generateJSON("./seed/existing_origin.json", [
+    {
+      cpf: user[0].CPF,
+      token: paymentProvider[0].Token,
+      agency: account[0].Agency,
+      number: account[0].AccountNumber,
+    },
+  ]);
+
+  for (let i = 0; i < PAYMENTS; i++) {
+    payments.push({
+      PixKeyId: pixKey[0].Id,
+      PaymentProviderAccountId: account[0].Id,
+      Status: "SUCCESS",
+      Amount: faker.number.int({ min: 1, max: 300000 }),
+      Description: faker.lorem.sentence(),
+      CreatedAt: new Date(Date.now()).toISOString(),
+      UpdatedAt: new Date(Date.now()).toISOString(),
+    });
+  }
+  return payments;
 }
 
 async function generatePaymentProviderAccounts() {
@@ -138,30 +192,7 @@ async function generatePaymentProviderAccounts() {
   return accounts;
 }
 
-async function populatePaymentProviders(paymentProviders) {
-  console.log("Storing payment providers on DB...");
-  const tableName = "PaymentProvider";
-
-  await knex.batchInsert(tableName, paymentProviders);
-}
-
-async function populateUsers(users) {
-  console.log("Storing users on DB...");
-  const tableName = "User";
-
-  await knex.batchInsert(tableName, users);
-}
-
-async function populatePaymentProviderAccounts(accounts) {
-  console.log("Storing payment provider accounts on DB...");
-  const tableName = "PaymentProviderAccount";
-
-  await knex.batchInsert(tableName, accounts);
-}
-
-async function populatePixKeys(pixKeys) {
-  console.log("Storing pix keys on DB...");
-  const tableName = "PixKey";
-
-  await knex.batchInsert(tableName, pixKeys);
+async function populate(tableName, entities) {
+  console.log(`Storing ${tableName} on DB...`);
+  await knex.batchInsert(tableName, entities);
 }
