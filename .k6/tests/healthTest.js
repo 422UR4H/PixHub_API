@@ -7,5 +7,5 @@ export const options = {
 
 export default function () {
   // endpoint
-  http.get("http://localhost:5000/Health");
+  http.get("http://localhost:8080/Health");
 }

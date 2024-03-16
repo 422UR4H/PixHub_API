@@ -49,7 +49,7 @@ export default function () {
     token: randomPaymentProvider.Token,
   };
 
-  const response = http.post("http://localhost:5000/keys", body, { headers });
+  const response = http.post("http://localhost:8080/keys", body, { headers });
   if (response.status != 201) {
     console.log(response.body);
   }
