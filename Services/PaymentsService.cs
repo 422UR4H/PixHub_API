@@ -1,5 +1,6 @@
 using PixHub.Dtos;
 using PixHub.Exceptions;
+using PixHub.IdempotenceKeys;
 using PixHub.Models;
 using PixHub.Repositories;
 
@@ -41,6 +42,9 @@ public class PaymentsService(
 
     ValidateSelfTransaction(originAccount, destinyAccount);
 
+    PaymentsIdempotenceKey key = new(paymentDTO.Origin.User.Cpf, paymentDTO.Amount, pixKey.Id);
+    if (await IsDuplicatedPayment(key)) throw new DuplicatedPaymentException();
+
     Payments payment = await _repository.CreateAsync(paymentDTO.ToEntity(originAccount.Id, pixKey.Id));
 
     TransferPaymentDTO transferPaymentDTO =
@@ -59,5 +63,15 @@ public class PaymentsService(
   public async Task FinishPayment(FinishPaymentsDTO dto, int id)
   {
     await _repository.FinishPaymentAsync(dto.Status, id);
+  }
+
+  readonly int TOLERANCE_DUPLICATE_PAYMENTS_SECONDS = 30;
+
+  private async Task<bool> IsDuplicatedPayment(PaymentsIdempotenceKey key)
+  {
+    Payments? recentPayment = await _repository
+      .FindRecentPaymentByIdempotenceKey(key, TOLERANCE_DUPLICATE_PAYMENTS_SECONDS);
+
+    return recentPayment is not null;
   }
 }

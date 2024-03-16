@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PixHub.Data;
 using PixHub.Exceptions;
+using PixHub.IdempotenceKeys;
 using PixHub.Models;
 
 namespace PixHub.Repositories;
@@ -24,5 +25,19 @@ public class PaymentsRepository(AppDbContext dbContext)
 
     payment.Status = status;
     await _dbContext.SaveChangesAsync();
+  }
+
+  public async Task<Payments?> FindRecentPaymentByIdempotenceKey(
+    PaymentsIdempotenceKey key,
+    int seconds)
+  {
+    DateTime secondsAgo = DateTime.UtcNow.AddSeconds(-seconds);
+
+    return await _dbContext.Payments.Where(p =>
+      p.Amount.Equals(key.Amount) &&
+      p.PixKeyId.Equals(key.PixKeyId) &&
+      p.PaymentProviderAccount!.User!.CPF.Equals(key.Cpf) &&
+      p.CreatedAt >= secondsAgo
+    ).FirstOrDefaultAsync();
   }
 }

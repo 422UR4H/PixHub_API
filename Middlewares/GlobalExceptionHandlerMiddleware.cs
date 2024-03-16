@@ -33,6 +33,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
       SelfTransactionException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
       TotalPixKeyLimitException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
       InvalidCpfPixKeyException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
+      DuplicatedPaymentException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
       ProviderPixKeyLimitException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
       UserNotFoundException _ => new ExceptionResponse(HttpStatusCode.NotFound, ex.Message),
       PixKeyNotFoundException _ => new ExceptionResponse(HttpStatusCode.NotFound, ex.Message),
