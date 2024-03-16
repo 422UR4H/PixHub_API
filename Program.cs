@@ -30,6 +30,8 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<PixKeyService>();
 builder.Services.AddScoped<PixKeyRepository>();
+builder.Services.AddScoped<PaymentsService>();
+builder.Services.AddScoped<PaymentsRepository>();
 builder.Services.AddScoped<PaymentProviderService>();
 builder.Services.AddScoped<PaymentProviderRepository>();
 builder.Services.AddScoped<PaymentProviderAccountService>();
