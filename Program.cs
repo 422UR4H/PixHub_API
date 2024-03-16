@@ -4,6 +4,7 @@ using PixHub.Services;
 using Microsoft.EntityFrameworkCore;
 using PixHub.Repositories;
 using Prometheus;
+using PixHub.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,9 @@ builder.Services.AddScoped<PaymentProviderService>();
 builder.Services.AddScoped<PaymentProviderRepository>();
 builder.Services.AddScoped<PaymentProviderAccountService>();
 builder.Services.AddScoped<PaymentProviderAccountRepository>();
+
+IConfigurationSection queueConfigurationSection = builder.Configuration.GetSection("QueueSettings");
+builder.Services.Configure<QueueConfig>(queueConfigurationSection);
 
 var app = builder.Build();
 
