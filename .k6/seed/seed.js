@@ -1,6 +1,7 @@
-const dotenv = require("dotenv");
+const { v4: uuid } = require("uuid");
 const { faker } = require("@faker-js/faker");
 const generateJSON = require("./generateJSON");
+const dotenv = require("dotenv");
 
 dotenv.config();
 
@@ -158,6 +159,7 @@ async function generatePayments() {
 
   for (let i = 0; i < PAYMENTS; i++) {
     payments.push({
+      TransactionId: uuid(),
       PixKeyId: pixKey[0].Id,
       PaymentProviderAccountId: account[0].Id,
       Status: "SUCCESS",
