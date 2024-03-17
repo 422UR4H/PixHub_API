@@ -70,9 +70,10 @@ If you want to decrease to apply the test, manually change the following values 
 
 ```aspx-csharp
 const USERS = 1_000_000;
+const PIX_KEYS = 1_000_000;
+const PAYMENTS = 1_000_000;
 const PAYMENT_PROVIDERS = 1_000_000;
 const PAYMENT_PROVIDER_ACCOUNTS = 1_000_000;
-const PIX_KEYS = 1_000_000;
 ```
 
 When you have adjusted it as you want, go to the `tests/` folder and run:
@@ -80,7 +81,10 @@ When you have adjusted it as you want, go to the `tests/` folder and run:
 - `k6 run healthTest.js` to stress the GET /Health route
 - `k6 run createPixKeysTest.js` to stress the POST /keys route
 - `k6 run findPixKeysTest.js` to stress the GET /keys route
+- `k6 run createPaymentsTest.js` to stress the POST /payments route
 
-The metrics can be seen at `http://localhost:3000/` in your browser
+The metrics can be seen at `http://localhost:3000/` in your browser.
 
 The login and password can be set by yourself. Feel free to explore Grafana and its dashboards!
+
+The RabbitMQ Management can be seen at `http://localhost:15672/` in your browser.
