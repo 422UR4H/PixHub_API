@@ -9,4 +9,9 @@ public class OriginDTO(UserDTO user, AccountDTO account)
 
   [Required(ErrorMessage = "Field account is mandatory")]
   public AccountDTO Account { get; } = account;
+
+  public string GetCpfUser()
+  {
+    return User.Cpf;
+  }
 }

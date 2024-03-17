@@ -21,9 +21,9 @@ public partial class PixKeyService(
   {
     PaymentProvider paymentProvider = await _paymentProviderService.FindByTokenAsync(token);
 
-    User user = await _userService.FindByCpfWithPaymentProviderAccounts(dto.User.Cpf);
+    User user = await _userService.FindByCpfWithPaymentProviderAccounts(dto.GetCpfUser());
 
-    if (await _repository.ExistsPixKeyAsync(dto.Key.Value)) throw new PixKeyAlreadyExistsException();
+    if (await _repository.ExistsPixKeyAsync(dto.GetKeyValue())) throw new PixKeyAlreadyExistsException();
 
     ValidatePixKeyByType(dto.Key, user.CPF);
 
@@ -31,9 +31,9 @@ public partial class PixKeyService(
 
     PaymentProviderAccount? account = user.PaymentProviderAccounts?
       .FirstOrDefault(a =>
-        a.AccountNumber.Equals(accountDTO.Number) &&
-        a.Agency.Equals(accountDTO.Agency) &&
-        a.PaymentProviderId.Equals(paymentProvider.Id));
+        a.Agency == accountDTO.Agency &&
+        a.AccountNumber == accountDTO.Number &&
+        a.PaymentProviderId == paymentProvider.Id);
 
     if (account is not null)
       await ValidatePixKeysLimit(account.Id);

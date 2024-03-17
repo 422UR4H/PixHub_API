@@ -21,4 +21,24 @@ public class CreatePaymentDTO(OriginDTO origin, DestinyDTO destiny, int amount, 
   {
     return new Payments(originAccountId, pixKeyId, this.Amount, this.Description);
   }
+
+  public AccountDTO GetOriginAccount()
+  {
+    return Origin.Account;
+  }
+
+  public string GetCpfUser()
+  {
+    return Origin.GetCpfUser();
+  }
+
+  public string GetKeyValue()
+  {
+    return Destiny.GetKeyValue();
+  }
+
+  public string GetKeyType()
+  {
+    return Destiny.GetKeyType();
+  }
 }

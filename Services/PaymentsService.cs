@@ -25,16 +25,14 @@ public class PaymentsService(
   {
     PaymentProvider originProvider = await _paymentProviderService.FindByTokenAsync(token);
 
-    // TODO: refactor object chain
-    AccountDTO originAccountDTO = paymentDTO.Origin.Account;
+    AccountDTO originAccountDTO = paymentDTO.GetOriginAccount();
     PaymentProviderAccount originAccount = await _accountService.FindByUserCpf(
-      paymentDTO.Origin.User.Cpf,
+      paymentDTO.GetCpfUser(),
       originAccountDTO.Agency,
       originAccountDTO.Number);
 
-    // TODO: refactor object chain
     PixKey pixKey = await _pixKeyService
-      .FindWithAccountAndProvider(paymentDTO.Destiny.Key.Type, paymentDTO.Destiny.Key.Value);
+      .FindWithAccountAndProvider(paymentDTO.GetKeyType(), paymentDTO.GetKeyValue());
 
     PaymentProviderAccount destinyAccount = pixKey?.PaymentProviderAccount ??
       throw new PaymentProviderAccountNotFoundException("Destiny Payment Provider Account not found!");
@@ -44,7 +42,7 @@ public class PaymentsService(
 
     ValidateSelfTransaction(originAccount, destinyAccount);
 
-    PaymentsIdempotenceKey key = new(paymentDTO.Origin.User.Cpf, paymentDTO.Amount, pixKey.Id);
+    PaymentsIdempotenceKey key = new(paymentDTO.GetCpfUser(), paymentDTO.Amount, pixKey.Id);
     if (await IsDuplicatedPayment(key)) throw new DuplicatedPaymentException();
 
     Payments payment = await _repository.CreateAsync(paymentDTO.ToEntity(originAccount.Id, pixKey.Id));

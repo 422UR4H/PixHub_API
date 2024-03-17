@@ -18,4 +18,14 @@ public class CreatePixKeyDTO(KeyDTO key, UserDTO user, AccountDTO account)
   {
     return Key.ToEntity(accountId);
   }
+
+  public string GetCpfUser()
+  {
+    return User.Cpf;
+  }
+
+  public string GetKeyValue()
+  {
+    return Key.Value;
+  }
 }
