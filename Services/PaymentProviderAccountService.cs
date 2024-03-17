@@ -11,6 +11,12 @@ public class PaymentProviderAccountService(PaymentProviderAccountRepository repo
 
   public async Task<PaymentProviderAccount> CreateAsync(AccountDTO dto, int userId, int paymentProviderId)
   {
+    bool isNumeric = dto.Number.All(char.IsDigit);
+    if (!isNumeric)
+    {
+      throw new InvalidAccountNumberException();
+    }
+
     if (await _repository.FindByAccountNumberAsync(dto.Number) is not null)
     {
       throw new PaymentProviderAccountAlreadyExistsException();

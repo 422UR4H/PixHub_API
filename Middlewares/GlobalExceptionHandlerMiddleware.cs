@@ -45,6 +45,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
       InvalidCpfException _ => new ExceptionResponse(HttpStatusCode.UnprocessableEntity, ex.Message),
       InvalidEmailException _ => new ExceptionResponse(HttpStatusCode.UnprocessableEntity, ex.Message),
       InvalidPhoneException _ => new ExceptionResponse(HttpStatusCode.UnprocessableEntity, ex.Message),
+      InvalidAccountNumberException _ => new ExceptionResponse(HttpStatusCode.UnprocessableEntity, ex.Message),
       PixKeyPersistenceDatabaseException _ => new ExceptionResponse(HttpStatusCode.InternalServerError, ex.Message),
       _ => new ExceptionResponse(HttpStatusCode.InternalServerError, "Internal server error. Please retry later.")
     };
