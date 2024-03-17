@@ -18,10 +18,11 @@ public class PaymentsRepository(AppDbContext dbContext)
     return entry.Entity;
   }
 
-  public async Task FinishPaymentAsync(string status, int id)
+  public async Task FinishPaymentAsync(string status, int id, Guid transactionId)
   {
-    Payments payment = await _dbContext.Payments.FirstOrDefaultAsync(p => p.Id == id)
-      ?? throw new PaymentNotFoundException();
+    Payments payment = await _dbContext.Payments
+      .FirstOrDefaultAsync(p => p.Id == id && p.TransactionId == transactionId) ??
+      throw new PaymentNotFoundException();
 
     payment.Status = status;
     await _dbContext.SaveChangesAsync();

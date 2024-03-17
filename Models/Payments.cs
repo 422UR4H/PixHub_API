@@ -9,6 +9,7 @@ public class Payments(int paymentProviderAccountId, int pixKeyId, int amount, st
   [Key]
   [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
   public int Id { get; set; }
+  public Guid TransactionId { get; set; } = Guid.NewGuid();
   public string Status { get; set; } = status;
   public int Amount { get; set; } = amount;
   public string? Description { get; set; } = description;

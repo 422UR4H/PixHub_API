@@ -21,7 +21,7 @@ public class PaymentsService(
 
   readonly int TOLERANCE_DUPLICATE_PAYMENTS_SECONDS = 30;
 
-  public async Task<Payments?> CreatePayment(CreatePaymentDTO paymentDTO, string token)
+  public async Task<OutputPaymentDTO?> CreatePayment(CreatePaymentDTO paymentDTO, string token)
   {
     PaymentProvider originProvider = await _paymentProviderService.FindByTokenAsync(token);
 
@@ -48,10 +48,10 @@ public class PaymentsService(
     Payments payment = await _repository.CreateAsync(paymentDTO.ToEntity(originAccount.Id, pixKey.Id));
 
     TransferPaymentDTO transferPaymentDTO =
-      new(payment.Id, paymentDTO, originProvider.Webhook, destinyProvider.Webhook);
+      new(payment.Id, payment.TransactionId, paymentDTO, originProvider.Webhook, destinyProvider.Webhook);
 
     _messageService.SendMessage(transferPaymentDTO);
-    return payment;
+    return new OutputPaymentDTO(payment.TransactionId);
   }
 
   private static void ValidateSelfTransaction(PaymentProviderAccount origin, PaymentProviderAccount destiny)
@@ -68,8 +68,8 @@ public class PaymentsService(
     return recentPayment is not null;
   }
 
-  public async Task FinishPayment(FinishPaymentsDTO dto, int id)
+  public async Task FinishPayment(FinishPaymentsDTO dto, int id, Guid transactionId)
   {
-    await _repository.FinishPaymentAsync(dto.Status, id);
+    await _repository.FinishPaymentAsync(dto.Status, id, transactionId);
   }
 }
