@@ -93,7 +93,8 @@ public partial class PixKeyService(
   {
     PaymentProvider paymentProvider = await _paymentProviderService.FindByTokenAsync(token);
 
-    PixKey pixKey = await _repository.FindAsync(type, value) ?? throw new PixKeyNotFoundException();
+    PixKey pixKey = await _repository.FindWithAccountAndUserAsync(type, value) ??
+      throw new PixKeyNotFoundException();
 
     PaymentProviderAccount account = pixKey.PaymentProviderAccount ??
       throw new PaymentProviderAccountNotFoundException();
