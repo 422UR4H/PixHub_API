@@ -111,6 +111,7 @@ async function generatePixKeys() {
   ];
 
   await knex.batchInsert("PaymentProviderAccount", account);
+
   generateJSON("./seed/existing_bank.json", [
     { token: paymentProvider[0].Token },
   ]);
@@ -183,6 +184,7 @@ async function generatePaymentProviderAccounts() {
 
   for (let i = 0; i < PAYMENT_PROVIDER_ACCOUNTS; i++) {
     accounts.push({
+      Id: i + 3,
       Agency: faker.finance.accountName(),
       AccountNumber: faker.finance.accountNumber(),
       CreatedAt: new Date(Date.now()).toISOString(),
