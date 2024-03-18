@@ -100,7 +100,6 @@ async function generatePixKeys() {
 
   const account = [
     {
-      Id: 1,
       Agency: faker.finance.accountName(),
       AccountNumber: faker.finance.accountNumber(),
       CreatedAt: new Date(Date.now()).toISOString(),
@@ -110,7 +109,9 @@ async function generatePixKeys() {
     },
   ];
 
-  await knex.batchInsert("PaymentProviderAccount", account);
+  const [result] = await knex
+    .batchInsert("PaymentProviderAccount", account)
+    .returning("Id");
 
   generateJSON("./seed/existing_bank.json", [
     { token: paymentProvider[0].Token },
@@ -118,7 +119,7 @@ async function generatePixKeys() {
 
   for (let i = 0; i < PIX_KEYS; i++) {
     pixKeys.push({
-      PaymentProviderAccountId: account[0].Id,
+      PaymentProviderAccountId: result.Id,
       Type: "Random",
       Value: faker.string.uuid().substring(0, 32),
       CreatedAt: new Date(Date.now()).toISOString(),
@@ -138,7 +139,6 @@ async function generatePayments() {
 
   const account = [
     {
-      Id: 2,
       Agency: faker.finance.accountName(),
       AccountNumber: faker.finance.accountNumber(),
       CreatedAt: new Date(Date.now()).toISOString(),
@@ -148,7 +148,10 @@ async function generatePayments() {
     },
   ];
 
-  await knex.batchInsert("PaymentProviderAccount", account);
+  const [result] = await knex
+    .batchInsert("PaymentProviderAccount", account)
+    .returning("Id");
+
   generateJSON("./seed/existing_origin.json", [
     {
       cpf: user[0].CPF,
@@ -162,7 +165,7 @@ async function generatePayments() {
     payments.push({
       TransactionId: uuid(),
       PixKeyId: pixKey[0].Id,
-      PaymentProviderAccountId: account[0].Id,
+      PaymentProviderAccountId: result.Id,
       Status: "SUCCESS",
       Amount: faker.number.int({ min: 1, max: 300000 }),
       Description: faker.lorem.sentence(),
@@ -184,7 +187,6 @@ async function generatePaymentProviderAccounts() {
 
   for (let i = 0; i < PAYMENT_PROVIDER_ACCOUNTS; i++) {
     accounts.push({
-      Id: i + 3,
       Agency: faker.finance.accountName(),
       AccountNumber: faker.finance.accountNumber(),
       CreatedAt: new Date(Date.now()).toISOString(),
