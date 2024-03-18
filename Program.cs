@@ -36,7 +36,8 @@ builder.Services.AddScoped<PaymentProviderService>();
 builder.Services.AddScoped<PaymentProviderRepository>();
 builder.Services.AddScoped<PaymentProviderAccountService>();
 builder.Services.AddScoped<PaymentProviderAccountRepository>();
-builder.Services.AddScoped<MessageService>();
+
+builder.Services.AddSingleton<MessageService>();
 
 IConfigurationSection queueConfigurationSection = builder.Configuration.GetSection("QueueSettings");
 builder.Services.Configure<QueueConfig>(queueConfigurationSection);
