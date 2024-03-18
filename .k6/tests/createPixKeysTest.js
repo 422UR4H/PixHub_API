@@ -29,12 +29,12 @@ export default function () {
   };
 
   const account = {
-    number: `${new Date(Date.now()).toISOString()}`.slice(-20),
+    number: `${Date.now()}${Math.floor(Math.random() * 10)}`,
     agency: `${new Date(Date.now()).toISOString()}`.slice(-20),
   };
 
   const key = {
-    value: `${new Date(Date.now()).toISOString()}`.slice(-20),
+    value: `${Date.now()}${Math.floor(Math.random() * 100)}`, //`${new Date(Date.now()).toISOString()}`.slice(-20),
     type: "Random",
   };
 
