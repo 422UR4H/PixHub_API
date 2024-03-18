@@ -43,7 +43,7 @@ public partial class PixKeyService(
     else account = await _accountService.CreateAsync(dto.Account, user.Id, paymentProvider.Id);
 
     PixKey pixKey = dto.ToEntity(account!.Id);
-    return await _repository.CreateAsync(pixKey) ?? throw new PixKeyPersistenceDatabaseException();
+    return await _repository.CreateAsync(pixKey);
   }
 
   private static void ValidateProviderPixKeysLimit(ICollection<PixKey>? pixKeys)
@@ -81,11 +81,6 @@ public partial class PixKeyService(
   [GeneratedRegex(@"^(\d{11})$")]
   private static partial Regex PhoneRegex();
 
-
-  public async Task ValidateIfExistsPixKey(string value)
-  {
-    if (await _repository.ExistsPixKeyAsync(value)) throw new PixKeyAlreadyExistsException();
-  }
 
   public async Task<OutputPixKeyDTO> FindPixKey(string type, string value, string token)
   {

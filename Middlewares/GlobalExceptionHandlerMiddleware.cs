@@ -29,7 +29,6 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
     ExceptionResponse response = ex switch
     {
       UnauthorizedProviderException _ => new ExceptionResponse(HttpStatusCode.Unauthorized, ex.Message),
-      InvalidIdException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
       SelfTransactionException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
       TotalPixKeyLimitException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
       InvalidCpfPixKeyException _ => new ExceptionResponse(HttpStatusCode.Forbidden, ex.Message),
@@ -46,7 +45,6 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
       InvalidEmailException _ => new ExceptionResponse(HttpStatusCode.UnprocessableEntity, ex.Message),
       InvalidPhoneException _ => new ExceptionResponse(HttpStatusCode.UnprocessableEntity, ex.Message),
       InvalidAccountNumberException _ => new ExceptionResponse(HttpStatusCode.UnprocessableEntity, ex.Message),
-      PixKeyPersistenceDatabaseException _ => new ExceptionResponse(HttpStatusCode.InternalServerError, ex.Message),
       _ => new ExceptionResponse(HttpStatusCode.InternalServerError, "Internal server error. Please retry later.")
     };
 

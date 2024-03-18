@@ -8,11 +8,6 @@ public class PaymentProviderAccountRepository(AppDbContext dbContext)
 {
   readonly AppDbContext _dbContext = dbContext;
 
-  public async Task<PaymentProviderAccount?> FindByAccountNumberAsync(string number)
-  {
-    return await _dbContext.PaymentProviderAccount.FirstOrDefaultAsync(a => a.AccountNumber == number);
-  }
-
   public async Task<bool> ExistsAccountNumberAsync(string number)
   {
     return await _dbContext.PaymentProviderAccount.AnyAsync(a => a.AccountNumber == number);
