@@ -14,4 +14,14 @@ public class OriginDTO(UserDTO user, AccountDTO account)
   {
     return User.Cpf;
   }
+
+  public string GetAgency()
+  {
+    return Account.Agency;
+  }
+
+  public string GetAccountNumber()
+  {
+    return Account.Number;
+  }
 }

@@ -41,4 +41,14 @@ public class CreatePaymentDTO(OriginDTO origin, DestinyDTO destiny, int amount, 
   {
     return Destiny.GetKeyType();
   }
+
+  public string GetOriginAgency()
+  {
+    return Origin.GetAgency();
+  }
+
+  public string GetOriginAccountNumber()
+  {
+    return Origin.GetAccountNumber();
+  }
 }

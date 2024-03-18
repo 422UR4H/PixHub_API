@@ -28,4 +28,14 @@ public class CreatePixKeyDTO(KeyDTO key, UserDTO user, AccountDTO account)
   {
     return Key.Value;
   }
+
+  public string GetAgency()
+  {
+    return Account.Agency;
+  }
+
+  public string GetAccountNumber()
+  {
+    return Account.Number;
+  }
 }

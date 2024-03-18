@@ -25,11 +25,10 @@ public class PaymentsService(
   {
     PaymentProvider originProvider = await _paymentProviderService.FindByTokenAsync(token);
 
-    AccountDTO originAccountDTO = paymentDTO.GetOriginAccount();
     PaymentProviderAccount originAccount = await _accountService.FindByUserCpf(
       paymentDTO.GetCpfUser(),
-      originAccountDTO.Agency,
-      originAccountDTO.Number);
+      paymentDTO.GetOriginAgency(),
+      paymentDTO.GetOriginAccountNumber());
 
     PixKey pixKey = await _pixKeyService
       .FindWithAccountAndProvider(paymentDTO.GetKeyType(), paymentDTO.GetKeyValue());
