@@ -2,6 +2,8 @@ import http from "k6/http";
 import { sleep } from "k6";
 import { SharedArray } from "k6/data";
 
+const TOKEN_PROVIDER = "123token";
+
 export const options = {
   vus: 10,
   duration: "10s",
@@ -12,17 +14,8 @@ const usersData = new SharedArray("users", () => {
   return result;
 });
 
-const paymentProvidersData = new SharedArray("paymentProviders", () => {
-  const result = JSON.parse(open("../seed/existing_paymentProviders.json"));
-  return result;
-});
-
 export default function () {
   const randomUser = usersData[Math.floor(Math.random() * usersData.length)];
-  const randomPaymentProvider =
-    paymentProvidersData[
-      Math.floor(Math.random() * paymentProvidersData.length)
-    ];
 
   const user = {
     cpf: randomUser.CPF,
@@ -34,7 +27,7 @@ export default function () {
   };
 
   const key = {
-    value: `${Date.now()}${Math.floor(Math.random() * 100)}`, //`${new Date(Date.now()).toISOString()}`.slice(-20),
+    value: `${Date.now()}${Math.floor(Math.random() * 100)}`,
     type: "Random",
   };
 
@@ -46,7 +39,7 @@ export default function () {
 
   const headers = {
     "Content-Type": "application/json",
-    token: randomPaymentProvider.Token,
+    token: TOKEN_PROVIDER,
   };
 
   const response = http.post("http://localhost:8080/keys", body, { headers });

@@ -2,6 +2,8 @@ import http from "k6/http";
 import { sleep } from "k6";
 import { SharedArray } from "k6/data";
 
+const TOKEN_PROVIDER = "123token";
+
 export const options = {
   vus: 10,
   duration: "10s",
@@ -12,18 +14,13 @@ const pixKeysData = new SharedArray("pixKeys", () => {
   return result;
 });
 
-const bankData = new SharedArray("bank", () => {
-  const result = JSON.parse(open("../seed/existing_bank.json"));
-  return result;
-});
-
 export default function () {
   const randomPixKey =
     pixKeysData[Math.floor(Math.random() * pixKeysData.length)];
 
   const headers = {
     "Content-Type": "application/json",
-    token: bankData[0].token,
+    token: TOKEN_PROVIDER,
   };
 
   const response = http.get(

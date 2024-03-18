@@ -7,6 +7,7 @@ export const options = {
   duration: "10s",
 };
 
+const TOKEN_PROVIDER = "123token";
 const MAX_CENTS_PIX_PAYMENTS = 300000;
 
 const pixKeysData = new SharedArray("pixKeys", () => {
@@ -14,8 +15,13 @@ const pixKeysData = new SharedArray("pixKeys", () => {
   return result;
 });
 
-const originData = new SharedArray("origin", () => {
-  const result = JSON.parse(open("../seed/existing_origin.json"));
+const accountData = new SharedArray("accounts", () => {
+  const result = JSON.parse(open("../seed/existing_accounts.json"));
+  return result;
+});
+
+const userData = new SharedArray("users", () => {
+  const result = JSON.parse(open("../seed/existing_users.json"));
   return result;
 });
 
@@ -23,12 +29,17 @@ export default function () {
   const randomPixKey =
     pixKeysData[Math.floor(Math.random() * pixKeysData.length)];
 
+  const randomAccount =
+    accountData[Math.floor(Math.random() * accountData.length)];
+
+  const userByAccount = userData.find((u) => u.Id === randomAccount.UserId);
+
   const user = {
-    cpf: originData[0].cpf,
+    cpf: userByAccount.CPF,
   };
   const account = {
-    number: originData[0].number,
-    agency: originData[0].agency,
+    number: randomAccount.AccountNumber,
+    agency: randomAccount.Agency,
   };
   const origin = { user, account };
 
@@ -47,7 +58,7 @@ export default function () {
 
   const headers = {
     "Content-Type": "application/json",
-    token: originData[0].token,
+    token: TOKEN_PROVIDER,
   };
 
   const response = http.post("http://localhost:8080/payments", body, {
