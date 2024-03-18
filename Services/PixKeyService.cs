@@ -21,9 +21,9 @@ public partial class PixKeyService(
   {
     PaymentProvider paymentProvider = await _paymentProviderService.FindByTokenAsync(token);
 
-    User user = await _userService.FindByCpfWithPaymentProviderAccounts(dto.GetCpfUser());
-
     if (await _repository.ExistsPixKeyAsync(dto.GetKeyValue())) throw new PixKeyAlreadyExistsException();
+
+    User user = await _userService.FindByCpfWithPaymentProviderAccounts(dto.GetCpfUser());
 
     ValidatePixKeyByType(dto.Key, user.CPF);
 
@@ -36,7 +36,7 @@ public partial class PixKeyService(
         a.PaymentProviderId == paymentProvider.Id);
 
     if (account is not null)
-      await ValidatePixKeysLimit(account.Id);
+      await ValidatePixKeysLimit(account.Id, user.Id);
     else
       account = await _accountService.CreateAsync(accountDTO, user.Id, paymentProvider.Id);
 
@@ -44,12 +44,12 @@ public partial class PixKeyService(
     return await _repository.CreateAsync(pixKey) ?? throw new PixKeyPersistenceDatabaseException();
   }
 
-  private async Task ValidatePixKeysLimit(int accountId)
+  private async Task ValidatePixKeysLimit(int accountId, int userId)
   {
-    int providerPixKeyCount = await _repository.CountAsync(accountId);
+    int providerPixKeyCount = await _repository.CountByAccountIdAsync(accountId);
     if (providerPixKeyCount >= 5) throw new ProviderPixKeyLimitException();
 
-    int totalPixKeyCount = await _repository.CountAsync();
+    int totalPixKeyCount = await _repository.CountByUserIdAsync(userId);
     if (totalPixKeyCount >= 20) throw new TotalPixKeyLimitException();
   }
 
