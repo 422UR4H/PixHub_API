@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Text.RegularExpressions;
 using PixHub.Dtos;
 using PixHub.Exceptions;
@@ -68,24 +69,14 @@ public partial class PixKeyService(
         if (key.Value != cpf) throw new InvalidCpfPixKeyException();
         break;
       case "Email":
-        var regexEmail = EmailRegex();
-        if (!regexEmail.IsMatch(key.Value))
-        {
-          throw new InvalidEmailException();
-        }
+        if (!MailAddress.TryCreate(key.Value, out var _)) throw new InvalidEmailException();
         break;
       case "Phone":
         var regexPhone = PhoneRegex();
-        if (!regexPhone.IsMatch(key.Value))
-        {
-          throw new InvalidPhoneException();
-        }
+        if (!regexPhone.IsMatch(key.Value)) throw new InvalidPhoneException();
         break;
     }
   }
-
-  [GeneratedRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")]
-  private static partial Regex EmailRegex();
 
   [GeneratedRegex(@"^(\d{11})$")]
   private static partial Regex PhoneRegex();
@@ -117,7 +108,7 @@ public partial class PixKeyService(
 
   public async Task<PixKey> FindWithAccountAndProvider(string type, string value)
   {
-    return await _repository.FindWithAccountAndProviderAsync(type, value)
-      ?? throw new PixKeyNotFoundException();
+    return await _repository.FindWithAccountAndProviderAsync(type, value) ??
+      throw new PixKeyNotFoundException();
   }
 }
