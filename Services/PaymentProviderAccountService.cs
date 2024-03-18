@@ -17,7 +17,7 @@ public class PaymentProviderAccountService(PaymentProviderAccountRepository repo
       throw new InvalidAccountNumberException();
     }
 
-    if (await _repository.FindByAccountNumberAsync(dto.Number) is not null)
+    if (await _repository.ExistsAccountNumberAsync(dto.Number))
     {
       throw new PaymentProviderAccountAlreadyExistsException();
     }

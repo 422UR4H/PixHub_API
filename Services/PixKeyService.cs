@@ -23,39 +23,40 @@ public partial class PixKeyService(
 
     if (await _repository.ExistsPixKeyAsync(dto.GetKeyValue())) throw new PixKeyAlreadyExistsException();
 
-    User user = await _userService.FindByCpfWithPaymentProviderAccounts(dto.GetCpfUser());
+    User user = await _userService.FindByCpfWithAccountsThenIncludesPixKeys(dto.GetCpfUser());
 
     ValidatePixKeyByType(dto.Key, user.CPF);
 
-    AccountDTO accountDTO = dto.Account;
+    if (user.PaymentProviderAccounts is not null)
+    {
+      ValidateTotalPixKeysLimit(user.PaymentProviderAccounts);
+    }
 
     PaymentProviderAccount? account = user.PaymentProviderAccounts?
       .FirstOrDefault(a =>
-        a.Agency == accountDTO.Agency &&
-        a.AccountNumber == accountDTO.Number &&
+        a.Agency == dto.GetAgency() &&
+        a.AccountNumber == dto.GetAccountNumber() &&
         a.PaymentProviderId == paymentProvider.Id);
 
-    if (account is not null) await ValidateProviderPixKeysLimit(account.Id);
-
-    if (user.PaymentProviderAccounts is not null)
-    {
-      await ValidateTotalPixKeysLimit(user.Id);
-    }
-    else account = await _accountService.CreateAsync(accountDTO, user.Id, paymentProvider.Id);
+    if (account is not null) ValidateProviderPixKeysLimit(account.PixKeys);
+    else account = await _accountService.CreateAsync(dto.Account, user.Id, paymentProvider.Id);
 
     PixKey pixKey = dto.ToEntity(account!.Id);
     return await _repository.CreateAsync(pixKey) ?? throw new PixKeyPersistenceDatabaseException();
   }
 
-  private async Task ValidateProviderPixKeysLimit(int accountId)
+  private static void ValidateProviderPixKeysLimit(ICollection<PixKey>? pixKeys)
   {
-    int providerPixKeyCount = await _repository.CountByAccountIdAsync(accountId);
-    if (providerPixKeyCount >= 5) throw new ProviderPixKeyLimitException();
+    if (pixKeys is not null && pixKeys.Count >= 5) throw new ProviderPixKeyLimitException();
   }
 
-  private async Task ValidateTotalPixKeysLimit(int userId)
+  private static void ValidateTotalPixKeysLimit(ICollection<PaymentProviderAccount> accounts)
   {
-    int totalPixKeyCount = await _repository.CountByUserIdAsync(userId);
+    int totalPixKeyCount = 0;
+    foreach (var acc in accounts)
+    {
+      totalPixKeyCount += acc.PixKeys?.Count ?? 0;
+    }
     if (totalPixKeyCount >= 20) throw new TotalPixKeyLimitException();
   }
 

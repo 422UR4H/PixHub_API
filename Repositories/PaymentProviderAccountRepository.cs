@@ -10,7 +10,12 @@ public class PaymentProviderAccountRepository(AppDbContext dbContext)
 
   public async Task<PaymentProviderAccount?> FindByAccountNumberAsync(string number)
   {
-    return await _dbContext.PaymentProviderAccount.FirstOrDefaultAsync(ppa => ppa.AccountNumber == number);
+    return await _dbContext.PaymentProviderAccount.FirstOrDefaultAsync(a => a.AccountNumber == number);
+  }
+
+  public async Task<bool> ExistsAccountNumberAsync(string number)
+  {
+    return await _dbContext.PaymentProviderAccount.AnyAsync(a => a.AccountNumber == number);
   }
 
   public async Task<PaymentProviderAccount> CreateAsync(PaymentProviderAccount account)
@@ -20,6 +25,7 @@ public class PaymentProviderAccountRepository(AppDbContext dbContext)
 
     return entry.Entity;
   }
+
   internal async Task<PaymentProviderAccount?> FindByUserCpfAsync(string cpf, string agency, string number)
   {
     return await _dbContext.PaymentProviderAccount
