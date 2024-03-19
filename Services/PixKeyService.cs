@@ -18,6 +18,9 @@ public partial class PixKeyService(
   readonly PaymentProviderAccountService _accountService = accountService;
   readonly PaymentProviderService _paymentProviderService = paymentProviderService;
 
+  readonly static int PROVIDER_PIX_KEYS_LIMIT = 5;
+  readonly static int TOTAL_PIX_KEYS_LIMIT = 20;
+
   public async Task<PixKey> CreatePixKey(CreatePixKeyDTO dto, string token)
   {
     PaymentProvider paymentProvider = await _paymentProviderService.FindByTokenAsync(token);
@@ -33,6 +36,7 @@ public partial class PixKeyService(
       ValidateTotalPixKeysLimit(user.PaymentProviderAccounts);
     }
 
+    // TODO: refactor this expression
     PaymentProviderAccount? account = user.PaymentProviderAccounts?
       .FirstOrDefault(a =>
         a.Agency == dto.GetAgency() &&
@@ -48,7 +52,10 @@ public partial class PixKeyService(
 
   private static void ValidateProviderPixKeysLimit(ICollection<PixKey>? pixKeys)
   {
-    if (pixKeys is not null && pixKeys.Count >= 5) throw new ProviderPixKeyLimitException();
+    if (pixKeys is not null && pixKeys.Count >= PROVIDER_PIX_KEYS_LIMIT)
+    {
+      throw new ProviderPixKeyLimitException();
+    }
   }
 
   private static void ValidateTotalPixKeysLimit(ICollection<PaymentProviderAccount> accounts)
@@ -58,7 +65,7 @@ public partial class PixKeyService(
     {
       totalPixKeyCount += acc.PixKeys?.Count ?? 0;
     }
-    if (totalPixKeyCount >= 20) throw new TotalPixKeyLimitException();
+    if (totalPixKeyCount >= TOTAL_PIX_KEYS_LIMIT) throw new TotalPixKeyLimitException();
   }
 
   private static void ValidatePixKeyByType(KeyDTO key, string cpf)

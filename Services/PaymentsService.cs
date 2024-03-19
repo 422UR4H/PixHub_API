@@ -19,7 +19,7 @@ public class PaymentsService(
   readonly PaymentProviderAccountService _accountService = accountService;
   readonly PaymentProviderService _paymentProviderService = paymentProviderService;
 
-  readonly int TOLERANCE_DUPLICATE_PAYMENTS_SECONDS = 30;
+  readonly static int TOLERANCE_DUPLICATE_PAYMENTS_SECONDS = 30;
 
   public async Task<OutputPaymentDTO?> CreatePayment(CreatePaymentDTO paymentDTO, string token)
   {
@@ -56,7 +56,9 @@ public class PaymentsService(
   private static void ValidateSelfTransaction(PaymentProviderAccount origin, PaymentProviderAccount destiny)
   {
     if (destiny.Agency == origin.Agency && destiny.AccountNumber == origin.AccountNumber)
+    {
       throw new SelfTransactionException();
+    }
   }
 
   private async Task<bool> IsDuplicatedPayment(PaymentsIdempotenceKey key)

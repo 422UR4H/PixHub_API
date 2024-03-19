@@ -10,6 +10,7 @@ public class UserService(UserRepository repository)
 
   public async Task<User> FindByCpfWithAccountsThenIncludesPixKeys(string cpf)
   {
-    return await _repository.FindByCpfWithAccountsThenIncludesPixKeysAsync(cpf) ?? throw new UserNotFoundException();
+    return await _repository.FindByCpfWithAccountsThenIncludesPixKeysAsync(cpf) ??
+      throw new UserNotFoundException();
   }
 }
