@@ -18,8 +18,8 @@ public partial class PixKeyService(
   readonly PaymentProviderAccountService _accountService = accountService;
   readonly PaymentProviderService _paymentProviderService = paymentProviderService;
 
-  readonly static int PROVIDER_PIX_KEYS_LIMIT = 5;
-  readonly static int TOTAL_PIX_KEYS_LIMIT = 20;
+  const int PROVIDER_PIX_KEYS_LIMIT = 5;
+  const int TOTAL_PIX_KEYS_LIMIT = 20;
 
   public async Task<PixKey> CreatePixKey(CreatePixKeyDTO dto, string token)
   {

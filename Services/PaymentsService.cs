@@ -19,7 +19,7 @@ public class PaymentsService(
   readonly PaymentProviderAccountService _accountService = accountService;
   readonly PaymentProviderService _paymentProviderService = paymentProviderService;
 
-  readonly static int TOLERANCE_DUPLICATE_PAYMENTS_SECONDS = 30;
+  const int TOLERANCE_DUPLICATE_PAYMENTS_SECONDS = 30;
 
   public async Task<OutputPaymentDTO?> CreatePayment(CreatePaymentDTO paymentDTO, string token)
   {
