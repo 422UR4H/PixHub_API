@@ -45,6 +45,9 @@ async function run() {
   accounts = await populate("PaymentProviderAccount", accounts);
   generateJSON("./seed/existing_accounts.json", accounts);
 
+  delete paymentProviders;
+  delete users;
+
   let pixKeys = await generatePixKeys(accounts);
   pixKeys = await populate("PixKey", pixKeys);
   generateJSON("./seed/existing_pixKeys.json", pixKeys);
