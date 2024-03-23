@@ -49,8 +49,8 @@ public class PaymentsService(
 
     Payments payment = await _repository.CreateAsync(paymentDTO.ToEntity(originAccount.Id, pixKey.Id));
 
-    TransferPaymentDTO transferPaymentDTO =
-      new(payment.Id, payment.TransactionId, paymentDTO, originProvider.Webhook, destinyProvider.Webhook);
+    WebhookDTO webhookDTO = new(originProvider.Webhook, destinyProvider.Webhook);
+    TransferPaymentDTO transferPaymentDTO = new(payment.Id, payment.TransactionId, paymentDTO, webhookDTO);
 
     _messageService.SendMessage(transferPaymentDTO, "payments");
     return new OutputPaymentDTO(payment.TransactionId);
