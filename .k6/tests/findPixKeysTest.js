@@ -2,11 +2,20 @@ import http from "k6/http";
 import { sleep } from "k6";
 import { SharedArray } from "k6/data";
 
-const TOKEN_PROVIDER = "123token";
-
 export const options = {
-  vus: 10,
-  duration: "10s",
+  scenarios: {
+    spike_usage: {
+      executor: "constant-arrival-rate",
+      duration: "60s",
+      preAllocatedVUs: 50,
+      maxVUs: 100,
+      rate: 334,
+      timeUnit: "1s",
+    },
+  },
+  thresholds: {
+    "http_reqs{scenario:spike_usage}": ["count>=20000"],
+  },
 };
 
 const pixKeysData = new SharedArray("pixKeys", () => {
@@ -20,16 +29,16 @@ export default function () {
 
   const headers = {
     "Content-Type": "application/json",
-    token: TOKEN_PROVIDER,
+    token: randomPixKey.Token,
   };
 
   const response = http.get(
-    `http://localhost:8080/keys/${randomPixKey.Type}/${randomPixKey.Value}`,
+    `http://127.0.0.1:8080/keys/${randomPixKey.Type}/${randomPixKey.Value}`,
     { headers }
   );
 
   if (response.status != 200) {
     console.log(response.body);
   }
-  sleep(1);
+  // sleep(1);
 }

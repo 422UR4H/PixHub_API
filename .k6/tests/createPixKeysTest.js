@@ -2,11 +2,20 @@ import http from "k6/http";
 import { sleep } from "k6";
 import { SharedArray } from "k6/data";
 
-const TOKEN_PROVIDER = "123token";
-
 export const options = {
-  vus: 10,
-  duration: "10s",
+  scenarios: {
+    spike_usage: {
+      executor: "constant-arrival-rate",
+      duration: "60s",
+      preAllocatedVUs: 50,
+      maxVUs: 100,
+      rate: 170,
+      timeUnit: "1s",
+    },
+  },
+  thresholds: {
+    "http_reqs{scenario:spike_usage}": ["count>=20000"],
+  },
 };
 
 const usersData = new SharedArray("users", () => {
@@ -14,15 +23,24 @@ const usersData = new SharedArray("users", () => {
   return result;
 });
 
+const paymentProvidersData = new SharedArray("paymentProviders", () => {
+  const result = JSON.parse(open("../seed/existing_paymentProviders.json"));
+  return result;
+});
+
 export default function () {
   const randomUser = usersData[Math.floor(Math.random() * usersData.length)];
+  const randomPaymentProvider =
+    paymentProvidersData[
+      Math.floor(Math.random() * paymentProvidersData.length)
+    ];
 
   const user = {
     cpf: randomUser.CPF,
   };
 
   const account = {
-    number: `${Date.now()}${Math.floor(Math.random() * 10)}`,
+    number: `${Date.now()}${Math.floor(Math.random() * 1000)}`,
     agency: `${new Date(Date.now()).toISOString()}`.slice(-20),
   };
 
@@ -39,12 +57,12 @@ export default function () {
 
   const headers = {
     "Content-Type": "application/json",
-    token: TOKEN_PROVIDER,
+    token: randomPaymentProvider.Token,
   };
 
-  const response = http.post("http://localhost:8080/keys", body, { headers });
+  const response = http.post("http://127.0.0.1:8080/keys", body, { headers });
   if (response.status != 201) {
     console.log(response.body);
   }
-  sleep(1);
+  // sleep(1);
 }

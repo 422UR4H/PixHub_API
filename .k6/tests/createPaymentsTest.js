@@ -3,11 +3,21 @@ import { sleep } from "k6";
 import { SharedArray } from "k6/data";
 
 export const options = {
-  vus: 10,
-  duration: "10s",
+  scenarios: {
+    spike_usage: {
+      executor: "constant-arrival-rate",
+      duration: "60s",
+      preAllocatedVUs: 50,
+      maxVUs: 100,
+      rate: 42,
+      timeUnit: "1s",
+    },
+  },
+  thresholds: {
+    "http_reqs{scenario:spike_usage}": ["count>=20000"],
+  },
 };
 
-const TOKEN_PROVIDER = "123token";
 const MAX_CENTS_PIX_PAYMENTS = 300000;
 
 const pixKeysData = new SharedArray("pixKeys", () => {
@@ -58,10 +68,10 @@ export default function () {
 
   const headers = {
     "Content-Type": "application/json",
-    token: TOKEN_PROVIDER,
+    token: randomAccount.Token,
   };
 
-  const response = http.post("http://localhost:8080/payments", body, {
+  const response = http.post("http://127.0.0.1:8080/payments", body, {
     headers,
   });
 

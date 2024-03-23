@@ -1,7 +1,8 @@
+const fs = require("fs");
+const ndjson = require("ndjson");
 const { v4: uuid } = require("uuid");
 const { faker } = require("@faker-js/faker");
 const generateJSON = require("./generateJSON");
-const generateNDJSON = require("./generateNDJSON");
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -16,10 +17,9 @@ const AMOUNT_DRAWN = 3;
 
 const USERS = 1_000_000;
 const PIX_KEYS = 1_000_000;
-const PAYMENTS = 1_000_000;
 const PAYMENT_PROVIDERS = 1_000_000;
 const PAYMENT_PROVIDER_ACCOUNTS = 1_000_000;
-const PAYMENTS_FOR_CONCILLIATION = 1_000_000;
+const PAYMENTS = 2_000_000;
 
 const ERASE_DATA = true;
 
@@ -43,27 +43,28 @@ async function run() {
   users = await populate("User", users);
   generateJSON("./seed/existing_users.json", users);
 
-  let accounts = generatePaymentProviderAccounts(paymentProviders, users);
-  accounts = await populate("PaymentProviderAccount", accounts);
-  generateJSON("./seed/existing_accounts.json", accounts);
-
+  let { accounts, tokens } = generatePaymentProviderAccounts(
+    paymentProviders,
+    users
+  );
   paymentProviders = null;
   users = null;
+  accounts = await populate("PaymentProviderAccount", accounts);
+  accounts.forEach((a, i) => (a.Token = tokens[i]));
+  tokens = null;
+  generateJSON("./seed/existing_accounts.json", accounts);
 
-  let pixKeys = await generatePixKeys(accounts);
+  let result = await generatePixKeys(accounts);
+  let pixKeys = result.pixKeys;
+  tokens = result.tokens;
   pixKeys = await populate("PixKey", pixKeys);
+  pixKeys.forEach((pk, i) => (pk.Token = tokens[i]));
+  tokens = null;
   generateJSON("./seed/existing_pixKeys.json", pixKeys);
-
-  let payments = await generatePayments(accounts, pixKeys);
-  payments = await populate("Payments", payments);
-  generateJSON("./seed/existing_payments.json", payments);
-
-  payments = null;
 
   accounts = drawRandomVector(accounts, AMOUNT_DRAWN);
   pixKeys = drawRandomVector(pixKeys, AMOUNT_DRAWN);
-  payments = await generatePaymentsAndNDJSONForConcilliation(accounts, pixKeys);
-  await populate("Payments", payments);
+  await generatePaymentsAndNDJSONForConcilliation(accounts, pixKeys);
 
   console.log("Closing DB connection...");
   await knex.destroy();
@@ -110,6 +111,7 @@ function generatePaymentProviderAccounts(paymentProviders, users) {
     `Generating ${PAYMENT_PROVIDER_ACCOUNTS} payment provider accounts...`
   );
   const accounts = [];
+  const tokens = [];
 
   for (let i = 0; i < PAYMENT_PROVIDER_ACCOUNTS; i++) {
     const paymentProvider =
@@ -124,13 +126,15 @@ function generatePaymentProviderAccounts(paymentProviders, users) {
       PaymentProviderId: paymentProvider.Id,
       UserId: user.Id,
     });
+    tokens.push(paymentProvider.Token);
   }
-  return accounts;
+  return { accounts, tokens };
 }
 
 async function generatePixKeys(accounts) {
   console.log(`Generating ${PIX_KEYS} pix keys...`);
   const pixKeys = [];
+  const tokens = [];
 
   for (let i = 0; i < PIX_KEYS; i++) {
     const account = accounts[Math.floor(Math.random() * accounts.length)];
@@ -142,42 +146,17 @@ async function generatePixKeys(accounts) {
       CreatedAt: new Date(Date.now()).toISOString(),
       UpdatedAt: new Date(Date.now()).toISOString(),
     });
+    tokens.push(account.Token);
   }
-  return pixKeys;
-}
-
-async function generatePayments(accounts, pixKeys) {
-  console.log(`Generating ${PAYMENTS} payments...`);
-  const payments = [];
-
-  for (let i = 0; i < PAYMENTS; i++) {
-    const account = accounts[Math.floor(Math.random() * accounts.length)];
-    const pixKey = pixKeys[Math.floor(Math.random() * pixKeys.length)];
-
-    payments.push({
-      TransactionId: uuid(),
-      PixKeyId: pixKey.Id,
-      PaymentProviderAccountId: account.Id,
-      Status: "SUCCESS",
-      Amount: faker.number.int({ min: 1, max: MAX_PIX_PAYMENTS_AMOUNT }),
-      Description: faker.lorem.sentence(),
-      CreatedAt: new Date(Date.now()).toISOString(),
-      UpdatedAt: new Date(Date.now()).toISOString(),
-    });
-  }
-  return payments;
+  return { pixKeys, tokens };
 }
 
 async function generatePaymentsAndNDJSONForConcilliation(accounts, pixKeys) {
-  const payments = [];
-
   for (let i = 0; i < AMOUNT_DRAWN; i++) {
-    console.log(
-      `Generating ${PAYMENTS_FOR_CONCILLIATION} payments for concilliation...`
-    );
+    console.log(`Generating ${PAYMENTS} payments for concilliation...`);
     const account = accounts[i];
     const pixKey = pixKeys[i];
-    const paymentsToFile = [];
+    const payments = [];
 
     if (pixKey.PaymentProviderAccountId === account.Id) {
       console.log("A rare conflict occurred!");
@@ -185,7 +164,13 @@ async function generatePaymentsAndNDJSONForConcilliation(accounts, pixKeys) {
       continue;
     }
 
-    for (let i = 0; i < PAYMENTS_FOR_CONCILLIATION; i++) {
+    const writer = ndjson.stringify();
+    const outputStream = fs.createWriteStream(
+      `./seed/Token=${account.Token}.ndjson`
+    );
+    writer.pipe(outputStream);
+
+    for (let i = 0; i < PAYMENTS; i++) {
       const transactionId = uuid();
 
       payments.push({
@@ -199,23 +184,14 @@ async function generatePaymentsAndNDJSONForConcilliation(accounts, pixKeys) {
         UpdatedAt: new Date(Date.now()).toISOString(),
       });
 
-      paymentsToFile.push({
+      writer.write({
         id: transactionId,
         status: "SUCCESS",
       });
     }
-
-    const paymentProvider = await knex("PaymentProvider")
-      .first()
-      .select("Token")
-      .where("Id", account.PaymentProviderId);
-
-    generateNDJSON(
-      `./seed/Token=${paymentProvider.Token}.ndjson`,
-      paymentsToFile
-    );
+    await populate("Payments", payments);
+    writer.end();
   }
-  return payments;
 }
 
 async function populate(tableName, entities) {
