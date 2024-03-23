@@ -1,6 +1,7 @@
 using PixHub.Dtos;
 using PixHub.Exceptions;
 using PixHub.IdempotenceKeys;
+using PixHub.Middlewares;
 using PixHub.Models;
 using PixHub.Repositories;
 
@@ -29,6 +30,8 @@ public class PaymentsService(
       paymentDTO.GetCpfUser(),
       paymentDTO.GetOriginAgency(),
       paymentDTO.GetOriginAccountNumber());
+
+    ValidationMiddleware.ValidatesRequestIntegrityBy(originProvider, originAccount);
 
     PixKey pixKey = await _pixKeyService
       .FindWithAccountAndProvider(paymentDTO.GetKeyType(), paymentDTO.GetKeyValue());

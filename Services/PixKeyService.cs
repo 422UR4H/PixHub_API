@@ -2,6 +2,7 @@ using System.Net.Mail;
 using System.Text.RegularExpressions;
 using PixHub.Dtos;
 using PixHub.Exceptions;
+using PixHub.Middlewares;
 using PixHub.Models;
 using PixHub.Repositories;
 
@@ -43,8 +44,15 @@ public partial class PixKeyService(
         a.AccountNumber == dto.GetAccountNumber() &&
         a.PaymentProviderId == paymentProvider.Id);
 
-    if (account is not null) ValidateProviderPixKeysLimit(account.PixKeys);
-    else account = await _accountService.CreateAsync(dto.Account, user.Id, paymentProvider.Id);
+    if (account is not null)
+    {
+      ValidationMiddleware.ValidatesRequestIntegrityBy(paymentProvider, account);
+      ValidateProviderPixKeysLimit(account.PixKeys);
+    }
+    else
+    {
+      account = await _accountService.CreateAsync(dto.Account, user.Id, paymentProvider.Id);
+    }
 
     PixKey pixKey = dto.ToEntity(account!.Id);
     return await _repository.CreateAsync(pixKey);
@@ -98,6 +106,8 @@ public partial class PixKeyService(
 
     PaymentProviderAccount account = pixKey.PaymentProviderAccount ??
       throw new PaymentProviderAccountNotFoundException();
+
+    ValidationMiddleware.ValidatesRequestIntegrityBy(paymentProvider, account);
 
     User user = account.User ?? throw new UserNotFoundException();
 
