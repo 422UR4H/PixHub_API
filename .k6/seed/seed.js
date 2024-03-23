@@ -1,6 +1,7 @@
 const { v4: uuid } = require("uuid");
 const { faker } = require("@faker-js/faker");
 const generateJSON = require("./generateJSON");
+const generateNDJSON = require("./generateNDJSON");
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -10,14 +11,15 @@ const knex = require("knex")({
   connection: process.env.DATABASE_URL,
 });
 
-const TOKEN_PROVIDER = "123token";
 const MAX_PIX_PAYMENTS_AMOUNT = 300_000;
+const AMOUNT_DRAWN = 3;
 
 const USERS = 1_000_000;
 const PIX_KEYS = 1_000_000;
 const PAYMENTS = 1_000_000;
 const PAYMENT_PROVIDERS = 1_000_000;
 const PAYMENT_PROVIDER_ACCOUNTS = 1_000_000;
+const PAYMENTS_FOR_CONCILLIATION = 1_000_000;
 
 const ERASE_DATA = true;
 
@@ -45,8 +47,8 @@ async function run() {
   accounts = await populate("PaymentProviderAccount", accounts);
   generateJSON("./seed/existing_accounts.json", accounts);
 
-  delete paymentProviders;
-  delete users;
+  paymentProviders = null;
+  users = null;
 
   let pixKeys = await generatePixKeys(accounts);
   pixKeys = await populate("PixKey", pixKeys);
@@ -56,11 +58,17 @@ async function run() {
   payments = await populate("Payments", payments);
   generateJSON("./seed/existing_payments.json", payments);
 
+  payments = null;
+
+  accounts = drawRandomVector(accounts, AMOUNT_DRAWN);
+  pixKeys = drawRandomVector(pixKeys, AMOUNT_DRAWN);
+  payments = await generatePaymentsAndNDJSONForConcilliation(accounts, pixKeys);
+  await populate("Payments", payments);
+
   console.log("Closing DB connection...");
   await knex.destroy();
 
   const end = new Date();
-  console.log("Done!");
   console.log(`Finished in ${(end - start) / 1000} seconds`);
 }
 
@@ -72,7 +80,7 @@ function generatePaymentProviders() {
 
   for (let i = 0; i < PAYMENT_PROVIDERS; i++) {
     paymentProviders.push({
-      Token: TOKEN_PROVIDER,
+      Token: uuid(),
       BankName: faker.company.name(),
       Webhook: "http://localhost:5039/payments/pix",
       CreatedAt: new Date(Date.now()).toISOString(),
@@ -160,7 +168,66 @@ async function generatePayments(accounts, pixKeys) {
   return payments;
 }
 
+async function generatePaymentsAndNDJSONForConcilliation(accounts, pixKeys) {
+  const payments = [];
+
+  for (let i = 0; i < AMOUNT_DRAWN; i++) {
+    console.log(
+      `Generating ${PAYMENTS_FOR_CONCILLIATION} payments for concilliation...`
+    );
+    const account = accounts[i];
+    const pixKey = pixKeys[i];
+    const paymentsToFile = [];
+
+    if (pixKey.PaymentProviderAccountId === account.Id) {
+      console.log("A rare conflict occurred!");
+      console.log(`${PAYMENTS} payments less than expected will be generated.`);
+      continue;
+    }
+
+    for (let i = 0; i < PAYMENTS_FOR_CONCILLIATION; i++) {
+      const transactionId = uuid();
+
+      payments.push({
+        TransactionId: transactionId,
+        PixKeyId: pixKey.Id,
+        PaymentProviderAccountId: account.Id,
+        Status: "SUCCESS",
+        Amount: faker.number.int({ min: 1, max: MAX_PIX_PAYMENTS_AMOUNT }),
+        Description: faker.lorem.sentence(),
+        CreatedAt: new Date(Date.now()).toISOString(),
+        UpdatedAt: new Date(Date.now()).toISOString(),
+      });
+
+      paymentsToFile.push({
+        id: transactionId,
+        status: "SUCCESS",
+      });
+    }
+
+    const paymentProvider = await knex("PaymentProvider")
+      .first()
+      .select("Token")
+      .where("Id", account.PaymentProviderId);
+
+    generateNDJSON(
+      `./seed/Token=${paymentProvider.Token}.ndjson`,
+      paymentsToFile
+    );
+  }
+  return payments;
+}
+
 async function populate(tableName, entities) {
   console.log(`Storing ${tableName} on DB...`);
   return knex.batchInsert(tableName, entities).returning("*");
+}
+
+function drawRandomVector(vector, amountDrawn) {
+  const newVector = [];
+
+  for (let i = 0; i < amountDrawn; i++) {
+    newVector.push(vector[Math.floor(Math.random() * vector.length)]);
+  }
+  return newVector;
 }
