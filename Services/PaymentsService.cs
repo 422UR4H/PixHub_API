@@ -49,7 +49,7 @@ public class PaymentsService(
     TransferPaymentDTO transferPaymentDTO =
       new(payment.Id, payment.TransactionId, paymentDTO, originProvider.Webhook, destinyProvider.Webhook);
 
-    _messageService.SendMessage(transferPaymentDTO);
+    _messageService.SendMessage(transferPaymentDTO, "payments");
     return new OutputPaymentDTO(payment.TransactionId);
   }
 
