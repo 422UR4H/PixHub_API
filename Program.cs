@@ -8,7 +8,7 @@ using PixHub.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContextPool<AppDbContext>(options =>
 {
     string host = builder.Configuration["Database:Host"] ?? string.Empty;
     string port = builder.Configuration["Database:Port"] ?? string.Empty;
