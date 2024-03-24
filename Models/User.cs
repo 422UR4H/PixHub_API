@@ -1,9 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace PixHub.Models;
 
+[Index("CPF", Name = "Idx_User_CPF", IsUnique = true)]
 public class User(string CPF, string name)
 {
   [Key]
