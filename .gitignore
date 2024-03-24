@@ -9,6 +9,7 @@
 # k6 seed json
 *existing_*.json
 package-lock.json
+*.ndjson
 
 # User-specific files
 *.rsuser
