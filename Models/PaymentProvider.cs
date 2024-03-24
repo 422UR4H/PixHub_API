@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace PixHub.Models;
 
+[Index("Token", Name = "Idx_PaymentProvider_Token", IsUnique = true)]
 public class PaymentProvider(string token, string bankName, string webhook)
 {
   [Key]
