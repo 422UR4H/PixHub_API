@@ -43,15 +43,19 @@ async function run() {
   users = await populate("User", users);
   generateJSON("./seed/existing_users.json", users);
 
-  let { accounts, tokens } = generatePaymentProviderAccounts(
+  let { accounts, tokens, cpfs } = generatePaymentProviderAccounts(
     paymentProviders,
     users
   );
   paymentProviders = null;
   users = null;
   accounts = await populate("PaymentProviderAccount", accounts);
-  accounts.forEach((a, i) => (a.Token = tokens[i]));
+  accounts.forEach((a, i) => {
+    a.Token = tokens[i];
+    a.CPF = cpfs[i];
+  });
   tokens = null;
+  cpfs = null;
   generateJSON("./seed/existing_accounts.json", accounts);
 
   let result = await generatePixKeys(accounts);
@@ -112,6 +116,7 @@ function generatePaymentProviderAccounts(paymentProviders, users) {
   );
   const accounts = [];
   const tokens = [];
+  const cpfs = [];
 
   for (let i = 0; i < PAYMENT_PROVIDER_ACCOUNTS; i++) {
     const paymentProvider =
@@ -127,8 +132,9 @@ function generatePaymentProviderAccounts(paymentProviders, users) {
       UserId: user.Id,
     });
     tokens.push(paymentProvider.Token);
+    cpfs.push(user.CPF);
   }
-  return { accounts, tokens };
+  return { accounts, tokens, cpfs };
 }
 
 async function generatePixKeys(accounts) {

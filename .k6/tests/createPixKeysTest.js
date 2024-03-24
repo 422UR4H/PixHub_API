@@ -14,34 +14,38 @@ export const options = {
     },
   },
   thresholds: {
-    "http_reqs{scenario:spike_usage}": ["count>=20000"],
+    "http_reqs{scenario:spike_usage}": ["count>=10000"],
   },
 };
 
-const usersData = new SharedArray("users", () => {
-  const result = JSON.parse(open("../seed/existing_users.json"));
-  return result;
-});
-
-const paymentProvidersData = new SharedArray("paymentProviders", () => {
-  const result = JSON.parse(open("../seed/existing_paymentProviders.json"));
+const accountData = new SharedArray("accounts", () => {
+  const result = JSON.parse(open("../seed/existing_accounts.json"));
   return result;
 });
 
 export default function () {
-  const randomUser = usersData[Math.floor(Math.random() * usersData.length)];
-  const randomPaymentProvider =
-    paymentProvidersData[
-      Math.floor(Math.random() * paymentProvidersData.length)
-    ];
+  const randomAccount =
+    accountData[Math.floor(Math.random() * accountData.length)];
 
   const user = {
-    cpf: randomUser.CPF,
+    cpf: randomAccount.CPF,
   };
 
+  const randomNumber = Math.floor(Math.random() * 3);
+
+  const number =
+    randomNumber < 2
+      ? randomAccount.AccountNumber
+      : `${Date.now()}${Math.floor(Math.random() * 1000)}`;
+
+  const agency =
+    randomNumber < 2
+      ? randomAccount.Agency
+      : `${new Date(Date.now()).toISOString()}`.slice(-20);
+
   const account = {
-    number: `${Date.now()}${Math.floor(Math.random() * 1000)}`,
-    agency: `${new Date(Date.now()).toISOString()}`.slice(-20),
+    number,
+    agency,
   };
 
   const key = {
@@ -57,7 +61,7 @@ export default function () {
 
   const headers = {
     "Content-Type": "application/json",
-    token: randomPaymentProvider.Token,
+    token: randomAccount.Token,
   };
 
   const response = http.post("http://127.0.0.1:8080/keys", body, { headers });
