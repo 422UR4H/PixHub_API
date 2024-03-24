@@ -8,7 +8,7 @@ public class User(string CPF, string name)
 {
   [Key]
   [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-  public int Id { get; set; }
+  public long Id { get; set; }
   public string CPF { get; set; } = CPF;
   public string Name { get; set; } = name;
 

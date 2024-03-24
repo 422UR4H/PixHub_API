@@ -17,7 +17,7 @@ public class CreatePaymentDTO(OriginDTO origin, DestinyDTO destiny, int amount, 
 
   public string? Description { get; } = description;
 
-  public Payments ToEntity(int originAccountId, int pixKeyId)
+  public Payments ToEntity(long originAccountId, long pixKeyId)
   {
     return new Payments(originAccountId, pixKeyId, this.Amount, this.Description);
   }

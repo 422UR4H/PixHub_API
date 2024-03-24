@@ -72,7 +72,7 @@ public class PaymentsService(
     return recentPayment is not null;
   }
 
-  public async Task FinishPayment(FinishPaymentsDTO dto, int id, Guid transactionId)
+  public async Task FinishPayment(FinishPaymentsDTO dto, long id, Guid transactionId)
   {
     await _repository.FinishPaymentAsync(dto.Status, id, transactionId);
   }

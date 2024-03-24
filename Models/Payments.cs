@@ -4,11 +4,11 @@ using System.Text.Json.Serialization;
 
 namespace PixHub.Models;
 
-public class Payments(int paymentProviderAccountId, int pixKeyId, int amount, string? description, string status = "PROCESSING")
+public class Payments(long paymentProviderAccountId, long pixKeyId, int amount, string? description, string status = "PROCESSING")
 {
   [Key]
   [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-  public int Id { get; set; }
+  public long Id { get; set; }
   public Guid TransactionId { get; set; } = Guid.NewGuid();
   public string Status { get; set; } = status;
   public int Amount { get; set; } = amount;
@@ -16,11 +16,11 @@ public class Payments(int paymentProviderAccountId, int pixKeyId, int amount, st
 
   [JsonIgnore]
   public PaymentProviderAccount? PaymentProviderAccount { get; set; }
-  public int PaymentProviderAccountId { get; set; } = paymentProviderAccountId;
-  
+  public long PaymentProviderAccountId { get; set; } = paymentProviderAccountId;
+
   [JsonIgnore]
   public PixKey? PixKey { get; set; }
-  public int PixKeyId { get; set; } = pixKeyId;
+  public long PixKeyId { get; set; } = pixKeyId;
 
   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
   public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

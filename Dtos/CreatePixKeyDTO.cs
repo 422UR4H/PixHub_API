@@ -14,7 +14,7 @@ public class CreatePixKeyDTO(KeyDTO key, UserDTO user, AccountDTO account)
   [Required(ErrorMessage = "Field account is mandatory")]
   public AccountDTO Account { get; } = account;
 
-  public PixKey ToEntity(int accountId)
+  public PixKey ToEntity(long accountId)
   {
     return Key.ToEntity(accountId);
   }

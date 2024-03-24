@@ -1,12 +1,12 @@
 namespace PixHub.Dtos;
 
 public class TransferPaymentDTO(
-  int paymentId,
+  long paymentId,
   Guid transactionId,
   CreatePaymentDTO createPaymentDTO,
   WebhookDTO webhook)
 {
-  public int PaymentId { get; } = paymentId;
+  public long PaymentId { get; } = paymentId;
   public Guid TransactionId { get; } = transactionId;
   public OriginDTO Origin { get; } = createPaymentDTO.Origin;
   public DestinyDTO Destiny { get; } = createPaymentDTO.Destiny;

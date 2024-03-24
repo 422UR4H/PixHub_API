@@ -17,7 +17,7 @@ public class KeyDTO(string value, string type)
 
   public KeyDTO(PixKey pixKey) : this(pixKey.Value, pixKey.Type) { }
 
-  public PixKey ToEntity(int accountId)
+  public PixKey ToEntity(long accountId)
   {
     return new PixKey(Value, Type, accountId);
   }

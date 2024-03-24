@@ -9,7 +9,7 @@ public class PaymentProviderAccountService(PaymentProviderAccountRepository repo
 {
   readonly PaymentProviderAccountRepository _repository = repository;
 
-  public async Task<PaymentProviderAccount> CreateAsync(AccountDTO dto, int userId, int paymentProviderId)
+  public async Task<PaymentProviderAccount> CreateAsync(AccountDTO dto, long userId, long paymentProviderId)
   {
     bool isNumeric = dto.Number.All(char.IsDigit);
     if (!isNumeric)

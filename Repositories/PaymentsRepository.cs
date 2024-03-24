@@ -18,7 +18,7 @@ public class PaymentsRepository(AppDbContext dbContext)
     return entry.Entity;
   }
 
-  public async Task FinishPaymentAsync(string status, int id, Guid transactionId)
+  public async Task FinishPaymentAsync(string status, long id, Guid transactionId)
   {
     Payments payment = await _dbContext.Payments
       .FirstOrDefaultAsync(p => p.Id == id && p.TransactionId == transactionId) ??
@@ -34,6 +34,7 @@ public class PaymentsRepository(AppDbContext dbContext)
   {
     DateTime secondsAgo = DateTime.UtcNow.AddSeconds(-seconds);
 
+    // TODO: refactor this expression
     return await _dbContext.Payments.Where(p =>
       p.Amount.Equals(key.Amount) &&
       p.PixKeyId.Equals(key.PixKeyId) &&

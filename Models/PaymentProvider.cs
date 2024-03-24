@@ -7,7 +7,7 @@ public class PaymentProvider(string token, string bankName, string webhook)
 {
   [Key]
   [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-  public int Id { get; set; }
+  public long Id { get; set; }
   public string Token { get; set; } = token;
   public string BankName { get; set; } = bankName;
   public string Webhook { get; set; } = webhook;
