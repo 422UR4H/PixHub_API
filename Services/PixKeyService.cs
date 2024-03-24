@@ -111,11 +111,7 @@ public partial class PixKeyService(
 
     User user = account.User ?? throw new UserNotFoundException();
 
-    KeyDTO keyDTO = new(pixKey);
-    OutputUserDTO userDTO = new(user);
-    OutputAccountDTO accountDTO = new(account, paymentProvider);
-
-    return new OutputPixKeyDTO(keyDTO, userDTO, accountDTO);
+    return new OutputPixKeyDTO(pixKey, user, account, paymentProvider);
   }
 
   public async Task<PixKey> FindWithAccountAndProvider(string type, string value)
