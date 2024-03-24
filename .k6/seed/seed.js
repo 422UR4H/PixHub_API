@@ -13,13 +13,13 @@ const knex = require("knex")({
 });
 
 const MAX_PIX_PAYMENTS_AMOUNT = 300_000;
-const AMOUNT_DRAWN = 3;
+const AMOUNT_DRAWN = 2;
 
-const USERS = 1_000_000;
-const PIX_KEYS = 1_000_000;
-const PAYMENT_PROVIDERS = 1_000_000;
-const PAYMENT_PROVIDER_ACCOUNTS = 1_000_000;
-const PAYMENTS = 2_000_000;
+const USERS = 800_000;
+const PIX_KEYS = 800_000;
+const PAYMENT_PROVIDERS = 800_000;
+const PAYMENT_PROVIDER_ACCOUNTS = 800_000;
+const PAYMENTS = 1_000_000;
 
 const ERASE_DATA = true;
 
@@ -83,7 +83,7 @@ function generatePaymentProviders() {
     paymentProviders.push({
       Token: uuid(),
       BankName: faker.company.name(),
-      Webhook: "http://localhost:5039/payments/pix",
+      Webhook: "http://localhost:5040/payments/pix",
       CreatedAt: new Date(Date.now()).toISOString(),
       UpdatedAt: new Date(Date.now()).toISOString(),
     });
@@ -97,7 +97,7 @@ function generateUsers() {
 
   for (let i = 0; i < USERS; i++) {
     users.push({
-      CPF: faker.number.int({ min: 10000000000, max: 99999999999 }).toString(),
+      CPF: (10000000000 + i).toString(),
       Name: faker.person.fullName(),
       CreatedAt: new Date(Date.now()).toISOString(),
       UpdatedAt: new Date(Date.now()).toISOString(),
