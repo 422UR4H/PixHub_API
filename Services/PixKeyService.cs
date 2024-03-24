@@ -26,7 +26,10 @@ public partial class PixKeyService(
   {
     PaymentProvider paymentProvider = await _paymentProviderService.FindByTokenAsync(token);
 
-    if (await _repository.ExistsPixKeyAsync(dto.GetKeyValue())) throw new PixKeyAlreadyExistsException();
+    if (await _repository.ExistsPixKeyAsync(dto.GetKeyValue(), dto.GetKeyType()))
+    {
+      throw new PixKeyAlreadyExistsException();
+    }
 
     User user = await _userService.FindByCpfWithAccountsThenIncludesPixKeys(dto.GetCpfUser());
 
