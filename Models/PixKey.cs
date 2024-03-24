@@ -1,9 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace PixHub.Models;
 
+[Index(nameof(Value), nameof(Type), IsUnique = true)]
 public class PixKey(string value, string type, long paymentProviderAccountId)
 {
   [Key]
