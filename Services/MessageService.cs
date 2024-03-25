@@ -12,7 +12,6 @@ public class MessageService(IOptions<QueueConfig> queueConfig)
   readonly string _userName = queueConfig.Value.UserName;
   readonly string _password = queueConfig.Value.Password;
 
-  // TODO: refactor with ENUM for queues
   public void SendMessage(object obj, string queue)
   {
     ConnectionFactory factory = new()

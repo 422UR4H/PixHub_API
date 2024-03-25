@@ -34,7 +34,6 @@ public class PaymentsRepository(AppDbContext dbContext)
   {
     DateTime secondsAgo = DateTime.UtcNow.AddSeconds(-seconds);
 
-    // TODO: refactor this expression
     return await _dbContext.Payments.Where(p =>
       p.Amount.Equals(key.Amount) &&
       p.PixKeyId.Equals(key.PixKeyId) &&
