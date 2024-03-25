@@ -30,11 +30,6 @@ const accountData = new SharedArray("accounts", () => {
   return result;
 });
 
-const userData = new SharedArray("users", () => {
-  const result = JSON.parse(open("../seed/existing_users.json"));
-  return result;
-});
-
 export default function () {
   const randomPixKey =
     pixKeysData[Math.floor(Math.random() * pixKeysData.length)];
@@ -42,10 +37,8 @@ export default function () {
   const randomAccount =
     accountData[Math.floor(Math.random() * accountData.length)];
 
-  const userByAccount = userData.find((u) => u.Id === randomAccount.UserId);
-
   const user = {
-    cpf: userByAccount.CPF,
+    cpf: randomAccount.CPF,
   };
   const account = {
     number: randomAccount.AccountNumber,
@@ -75,7 +68,7 @@ export default function () {
     headers,
   });
 
-  if (response.status != 201) {
+  if (response.status != 200) {
     console.log(response.body);
   }
   // sleep(1);
