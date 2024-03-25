@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace PixHub.Models;
 
+[Index(nameof(AccountNumber), nameof(Agency), IsUnique = true)]
 public class PaymentProviderAccount(string accountNumber, string agency, long userId, long paymentProviderId)
 {
   [Key]
