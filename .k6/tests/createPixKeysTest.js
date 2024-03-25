@@ -8,8 +8,8 @@ export const options = {
       executor: "constant-arrival-rate",
       duration: "60s",
       preAllocatedVUs: 50,
-      maxVUs: 100,
-      rate: 170,
+      maxVUs: 120,
+      rate: 500,
       timeUnit: "1s",
     },
   },
@@ -31,15 +31,15 @@ export default function () {
     cpf: randomAccount.CPF,
   };
 
-  const randomNumber = Math.floor(Math.random() * 3);
+  const randomNumber = Math.floor(Math.random() * 5);
 
   const number =
-    randomNumber < 2
+    randomNumber < 4
       ? randomAccount.AccountNumber
       : `${Date.now()}${Math.floor(Math.random() * 1000)}`;
 
   const agency =
-    randomNumber < 2
+    randomNumber < 4
       ? randomAccount.Agency
       : `${new Date(Date.now()).toISOString()}`.slice(-20);
 
