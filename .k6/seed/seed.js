@@ -125,7 +125,7 @@ function generatePaymentProviderAccounts(paymentProviders, users) {
 
     accounts.push({
       Agency: faker.finance.accountName(),
-      AccountNumber: faker.finance.accountNumber(),
+      AccountNumber: (10000000000 + i).toString(),
       CreatedAt: new Date(Date.now()).toISOString(),
       UpdatedAt: new Date(Date.now()).toISOString(),
       PaymentProviderId: paymentProvider.Id,

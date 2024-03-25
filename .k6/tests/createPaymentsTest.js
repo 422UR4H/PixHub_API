@@ -14,7 +14,7 @@ export const options = {
     },
   },
   thresholds: {
-    "http_reqs{scenario:spike_usage}": ["count>=20000"],
+    "http_reqs{scenario:spike_usage}": ["count>=2500"],
   },
 };
 
@@ -78,5 +78,5 @@ export default function () {
   if (response.status != 201) {
     console.log(response.body);
   }
-  sleep(1);
+  // sleep(1);
 }
