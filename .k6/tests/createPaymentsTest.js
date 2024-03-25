@@ -68,7 +68,7 @@ export default function () {
     headers,
   });
 
-  if (response.status != 200) {
+  if (response.status != 201) {
     console.log(response.body);
   }
   // sleep(1);

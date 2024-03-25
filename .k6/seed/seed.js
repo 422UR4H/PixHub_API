@@ -37,11 +37,9 @@ async function run() {
 
   let paymentProviders = generatePaymentProviders();
   paymentProviders = await populate("PaymentProvider", paymentProviders);
-  generateJSON("./seed/existing_paymentProviders.json", paymentProviders);
 
   let users = generateUsers();
   users = await populate("User", users);
-  generateJSON("./seed/existing_users.json", users);
 
   let { accounts, tokens, cpfs } = generatePaymentProviderAccounts(
     paymentProviders,
