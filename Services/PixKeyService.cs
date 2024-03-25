@@ -117,9 +117,9 @@ public partial class PixKeyService(
     return new OutputPixKeyDTO(pixKey, user, account, paymentProvider);
   }
 
-  public async Task<PixKey> FindWithAccountAndProvider(string type, string value)
+  public async Task<PixKey> FindWithAccountAndProvider(string value, string type)
   {
-    return await _repository.FindWithAccountAndProviderAsync(type, value) ??
+    return await _repository.FindWithAccountAndProviderAsync(value, type) ??
       throw new PixKeyNotFoundException();
   }
 }

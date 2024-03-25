@@ -29,11 +29,11 @@ public class PixKeyRepository(AppDbContext dbContext)
       .FirstOrDefaultAsync(pk => pk.Type.Equals(type) && pk.Value.Equals(value));
   }
 
-  public async Task<PixKey?> FindWithAccountAndProviderAsync(string type, string value)
+  public async Task<PixKey?> FindWithAccountAndProviderAsync(string value, string type)
   {
     return await _dbContext.PixKey
       .Include(pk => pk.PaymentProviderAccount)
       .ThenInclude(a => a!.PaymentProvider)
-      .FirstOrDefaultAsync(pk => pk.Type.Equals(type) && pk.Value.Equals(value));
+      .FirstOrDefaultAsync(pk => pk.Value.Equals(value) && pk.Type.Equals(type));
   }
 }

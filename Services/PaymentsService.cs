@@ -34,7 +34,7 @@ public class PaymentsService(
     ValidationMiddleware.ValidatesRequestIntegrityBy(originProvider, originAccount);
 
     PixKey pixKey = await _pixKeyService
-      .FindWithAccountAndProvider(paymentDTO.GetKeyType(), paymentDTO.GetKeyValue());
+      .FindWithAccountAndProvider(paymentDTO.GetKeyValue(), paymentDTO.GetKeyType());
 
     PaymentProviderAccount destinyAccount = pixKey?.PaymentProviderAccount ??
       throw new PaymentProviderAccountNotFoundException("Destiny Payment Provider Account not found!");
