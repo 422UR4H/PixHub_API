@@ -8,9 +8,9 @@ public class PixKeyRepository(AppDbContext dbContext)
 {
   readonly AppDbContext _dbContext = dbContext;
 
-  public async Task<bool> ExistsPixKeyAsync(string value, string type)
+  public async Task<bool> ExistsPixKeyAsync(string value)
   {
-    return await _dbContext.PixKey.AnyAsync(pk => pk.Value.Equals(value) && pk.Type.Equals(type));
+    return await _dbContext.PixKey.AnyAsync(pk => pk.Value.Equals(value));
   }
 
   public async Task<PixKey> CreateAsync(PixKey pixKey)

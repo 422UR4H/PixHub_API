@@ -26,7 +26,7 @@ public partial class PixKeyService(
   {
     PaymentProvider paymentProvider = await _paymentProviderService.FindByTokenAsync(token);
 
-    if (await _repository.ExistsPixKeyAsync(dto.GetKeyValue(), dto.GetKeyType()))
+    if (await _repository.ExistsPixKeyAsync(dto.GetKeyValue()))
     {
       throw new PixKeyAlreadyExistsException();
     }
