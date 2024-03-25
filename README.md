@@ -20,7 +20,6 @@ Enter the folder and run the Docker environment to generate de app image:
 
 ```bash
 cd PixHub_API/
-cd Monitoring/
 docker compose up
 ```
 
