@@ -4,9 +4,13 @@ A REST API built in C# with ASP.NET for provide a web service to creates/process
 
 ## Description
 
-The application is responsible for simulating part of the processing of the logic of the PIX mechanism within the **Central Bank** (BC), being used by different financial institutions to process the creation of PIX keys, consultations, payments and the like (for natural persons). In this context, these institutions are called **Payment Service Providers** (PSP).
+The application is responsible for simulating part of the processing of the logic of the PIX mechanism within the **Central Bank** (BC), being used by different financial institutions to process the creation of PIX keys, consultations, payments and the like (for physical persons). In this context, these institutions are called **Payment Service Providers** (PSP).
 
 This Web Service contains a Dockerized environment to run a PostgreSQL database with Grafana K6 for stress testing, RabbitMQ as Message Broker to manage queues, Prometheus and Grafana for monitoring the system and the application itself, providing an integrated and isolated environment for observability and tests.
+
+**Important!** This api has 2 consumers that work together as a single application:
+  - [PaymentConsumer](https://github.com/422UR4H/PixHub_PaymentConsumer) for the `/payments` route
+  - [ConcilliationConsumer](https://github.com/422UR4H/PixHub_ConcilliationConsumer) for the `/concilliation` route
 
 <br />
 
@@ -16,7 +20,7 @@ Clone the repository:
 
 `git clone https://github.com/422UR4H/PixHub_API`
 
-Enter the folder and run the Docker environment to generate de app image:
+Enter the folder and run the Docker environment to generate de app image and run migrations:
 
 ```bash
 cd PixHub_API/
@@ -37,7 +41,9 @@ And the DTOs of the entities are in `Dtos/`.
 
 Use Swagger to access route documentation and dynamically interact with the application!
 
-Access the link in the browser: `http://localhost:8080/swagger/index.html`.
+After cloning the application and uploading the Docker environment, access the link in the browser: `http://localhost:8080/swagger/index.html`.
+
+Note: To use the `/payments` and `/conciliation` route correctly, you must clone and up their respective consumers that are at the beginning of this document.
 
 ## Technologies used
 
@@ -58,7 +64,7 @@ For this project, I used:
 
 ## Stress Tests
 
-Create a .env file in `.k6/` folder following the .env.example file and insert the test database url to run the automated tests.
+Create a .env file in `.k6/` folder following the `.env.example` file and insert the test database url to run the automated tests.
 
 Note: If you are running Postgres with Docker, you can simply copy the contents of `.env.example` to a .env, or simply delete the ".example", leaving just the .env in the file name.
 
